@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
 class Post extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\PostFactory> */
-    use HasFactory, InteractsWithMedia;
+
+    use HasFactory, InteractsWithMedia, HasUuids;
 
     protected $fillable = [
         'type',
@@ -46,5 +49,20 @@ class Post extends Model implements HasMedia
     {
         $this->addMediaCollection('cover')
             ->singleFile();
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * Get the columns that should receive a unique identifier.
+     *
+     * @return array<int, string>
+     */
+    public function uniqueIds(): array
+    {
+        return ['uuid'];
     }
 }
