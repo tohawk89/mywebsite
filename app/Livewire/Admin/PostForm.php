@@ -95,9 +95,10 @@ class PostForm extends Component
 
         $metaData = [];
         if ($this->type === PostType::SPOTIFY->value) {
-            $metaData['spotify_url'] = $this->spotify_url;
+            $metaData['spotify_url'] = $this->getEmbedUrl($this->spotify_url, 'spotify');
         } elseif ($this->type === PostType::YOUTUBE->value) {
             $metaData['youtube_url'] = $this->youtube_url;
+            $metaData['embed_url'] = $this->getEmbedUrl($this->youtube_url, 'youtube');
         }
 
         $data = [
@@ -138,6 +139,32 @@ class PostForm extends Component
 
         session()->flash('status', 'Post saved successfully.');
         return redirect()->route('posts.index');
+    }
+
+    private function getEmbedUrl($url, $type)
+    {
+        if ($type === 'spotify') {
+            // Converts https://open.spotify.com/track/xyz -> https://open.spotify.com/embed/track/xyz
+            if (str_contains($url, '/embed/')) {
+                return $url;
+            }
+            return str_replace('open.spotify.com/', 'open.spotify.com/embed/', $url);
+        }
+
+        if ($type === 'youtube') {
+            // Handles youtu.be/xyz and youtube.com/watch?v=xyz
+            $videoId = '';
+            if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $url, $matches)) {
+                $videoId = $matches[1];
+            }
+
+            if ($videoId) {
+                return "https://www.youtube.com/embed/{$videoId}";
+            }
+            return $url; // Fallback
+        }
+
+        return $url;
     }
 
     public function render()
