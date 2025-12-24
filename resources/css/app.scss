@@ -1,0 +1,11 @@
+$body-bg: #fdfbf7; // Warm off-white
+$body-color: #2c3e50;
+$font-family-sans-serif: 'Instrument Sans', sans-serif;
+
+@import '../../node_modules/bootstrap/scss/bootstrap';
+
+// Custom utilities if needed
+.modal-backdrop.show {
+    opacity: 0.8;
+    background-color: #fdfbf7; // Match body bg for a "glass" feel or just solid
+}
