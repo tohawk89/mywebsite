@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(SettingSeeder::class);
+
         // Create Tags
         $tags = ['Design', 'Code', 'Music', 'Life', 'Tech', 'Art', 'Nature'];
         $tagModels = collect();
@@ -92,7 +94,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $imagePost->tags()->attach($tagModels->random(1));
         try {
-            $imagePost->addMediaFromUrl('https://picsum.photos/seed/img' . rand(1, 1000) . '/800/600')->toMediaCollection('cover');
+            $imagePost->addMediaFromUrl('https://picsum.photos/seed/img'.rand(1, 1000).'/800/600')->toMediaCollection('cover');
         } catch (\Exception $e) {
             // connection error handling
         }
@@ -121,7 +123,7 @@ class DatabaseSeeder extends Seeder
         for ($i = 0; $i < 12; $i++) {
             $post = Post::create([
                 'type' => PostType::BLOG,
-                'title' => 'Blog Post ' . $i,
+                'title' => 'Blog Post '.$i,
                 'content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'posted_at' => now()->subDays(rand(1, 30)),
             ]);
@@ -131,10 +133,10 @@ class DatabaseSeeder extends Seeder
 
             // Attach Media (Picsum)
             try {
-                $post->addMediaFromUrl('https://picsum.photos/seed/' . ($i + 100) . '/600/400')
+                $post->addMediaFromUrl('https://picsum.photos/seed/'.($i + 100).'/600/400')
                     ->toMediaCollection('cover');
             } catch (\Throwable $e) {
-                echo "Failed to attach media to post {$post->id}: " . $e->getMessage() . PHP_EOL;
+                echo "Failed to attach media to post {$post->id}: ".$e->getMessage().PHP_EOL;
             }
         }
     }

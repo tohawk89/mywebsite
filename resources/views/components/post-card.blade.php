@@ -1,34 +1,50 @@
 @props(['post'])
 
 @use('App\Enums\PostType')
+@use('App\Enums\SnsType')
 
-<div class="card border-0 h-100 shadow-sm rounded-0 overflow-hidden text-start post-card group" style="background-color: {{ 
+<div class="card border-0 h-100 shadow-sm rounded-0 overflow-hidden text-start post-card group" style="background-color: {{
          match ($post->type) {
         PostType::SPOTIFY => '#90EE90',
         PostType::YOUTUBE => '#FFCCCB',
         PostType::QUOTE => '#FFFFE0',
         PostType::PROFILE => '#E6E6FA', // Lavender for Profile
         default => '#ffffff'
-    } 
+    }
      }};">
 
     {{-- PROFILE CARD --}}
     @if($post->type === PostType::PROFILE)
         <div class="card-body text-center p-4">
             <div class="mb-3">
-                <img src="{{ $post->meta_data['avatar'] ?? 'https://ui-avatars.com/api/?name=User' }}" alt="Avatar"
-                    class="rounded-circle shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+                @if($post->hasMedia('avatar'))
+                    <img src="{{ $post->getFirstMediaUrl('avatar') }}" alt="{{ $post->title }}"
+                        class="rounded-circle shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+                @else
+                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center shadow-sm text-white"
+                        style="width: 100px; height: 100px; font-size: 2rem;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                @endif
             </div>
             <h4 class="card-title fw-bold font-sans mb-1">{{ $post->title }}</h4>
-            <div class="card-text text-muted mb-4 font-serif">{{ $post->content }}</div>
+            @if($post->content)
+                <div class="card-text text-muted mb-4 font-serif">{{ $post->content }}</div>
+            @endif
 
-            @if(isset($post->meta_data['links']))
-                <div class="d-flex justify-content-center gap-3">
-                    @foreach($post->meta_data['links'] as $link)
-                        <a href="{{ $link['url'] }}" class="text-dark fs-4 text-decoration-none opacity-75 hover-opacity-100"
-                            title="{{ $link['label'] }}">
-                            <i class="bi {{ $link['icon'] }}"></i>
-                        </a>
+            @if(!empty($post->meta_data['sns']))
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    @foreach($post->meta_data['sns'] as $link)
+                        @php
+                            $snsType = SnsType::tryFrom($link['platform']);
+                        @endphp
+                        @if($snsType && !empty($link['url']))
+                            <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer"
+                                class="text-dark fs-4 text-decoration-none opacity-75"
+                                title="{{ $snsType->label() }}">
+                                <i class="bi {{ $snsType->icon() }}"></i>
+                            </a>
+                        @endif
                     @endforeach
                 </div>
             @endif

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>{{ $title ?? 'Admin Panel' }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
 
@@ -29,6 +30,10 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('posts.*') ? 'active' : '' }}"
                             href="{{ route('posts.index') }}">Posts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('settings') ? 'active' : '' }}"
+                            href="{{ route('settings') }}">Settings</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">

@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Admin;
 
+use App\Enums\PostType;
+use App\Enums\SnsType;
 use App\Models\Post;
 use App\Models\Tag;
-use App\Enums\PostType;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
-use Livewire\Attributes\Layout;
 
 #[Layout('components.layouts.admin')]
 class PostForm extends Component
@@ -20,20 +21,32 @@ class PostForm extends Component
 
     // Form Fields
     public $type = 'blog';
+
     public $title = '';
+
     public $content = '';
+
     public $is_pinned = false;
+
     public $posted_at;
+
     public $tags = ''; // Comma separated tags
 
     // Dynamic Fields (mapped to meta_data or specific logic)
     public $spotify_url = '';
+
     public $youtube_url = '';
+
+    // Profile Fields
+    /** @var array<int, array{platform: string, url: string}> */
+    public array $sns = [];
 
     // Media
     public $cover_image;
 
-    public function mount(Post $post = null)
+    public $avatar_image;
+
+    public function mount(?Post $post = null)
     {
         if ($post && $post->exists) {
             $this->post = $post;
@@ -49,6 +62,7 @@ class PostForm extends Component
             // Meta Data
             $this->spotify_url = $post->meta_data['spotify_url'] ?? '';
             $this->youtube_url = $post->meta_data['youtube_url'] ?? '';
+            $this->sns = $post->meta_data['sns'] ?? [];
         } else {
             $this->type = PostType::BLOG->value;
             $this->posted_at = now()->format('Y-m-d\TH:i');
@@ -65,6 +79,10 @@ class PostForm extends Component
             'posted_at' => ['nullable', 'date'],
             'tags' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'image', 'max:5120'], // 5MB
+            'avatar_image' => ['nullable', 'image', 'max:5120'], // 5MB
+            'sns' => ['nullable', 'array'],
+            'sns.*.platform' => ['required', Rule::enum(SnsType::class)],
+            'sns.*.url' => ['required', 'url', 'max:500'],
         ];
 
         // Dynamic Validation
@@ -86,7 +104,22 @@ class PostForm extends Component
             // Content is optional but recommended
         }
 
+        if ($this->type === PostType::PROFILE->value) {
+            $rules['title'] = ['required', 'string', 'max:255'];
+        }
+
         return $rules;
+    }
+
+    public function addSns(): void
+    {
+        $this->sns[] = ['platform' => SnsType::GitHub->value, 'url' => ''];
+    }
+
+    public function removeSns(int $index): void
+    {
+        array_splice($this->sns, $index, 1);
+        $this->sns = array_values($this->sns);
     }
 
     public function save()
@@ -99,7 +132,11 @@ class PostForm extends Component
         } elseif ($this->type === PostType::YOUTUBE->value) {
             $metaData['youtube_url'] = $this->youtube_url;
             $metaData['embed_url'] = $this->getEmbedUrl($this->youtube_url, 'youtube');
+        } elseif ($this->type === PostType::PROFILE->value) {
+            $metaData['sns'] = $this->sns;
         }
+
+        $wasNotPinned = ! ($this->post?->is_pinned ?? false);
 
         $data = [
             'type' => $this->type,
@@ -116,13 +153,22 @@ class PostForm extends Component
             $this->post = Post::create($data);
         }
 
+        // Assign sort_order when a post is newly pinned (goes to end of pinned list)
+        if ($this->is_pinned && $wasNotPinned) {
+            $maxOrder = Post::where('is_pinned', true)
+                ->where('id', '!=', $this->post->id)
+                ->max('sort_order') ?? -1;
+            $this->post->update(['sort_order' => $maxOrder + 1]);
+        }
+
         // Handle Tags
         if ($this->tags) {
             $tagNames = array_map('trim', explode(',', $this->tags));
             $tagIds = [];
             foreach ($tagNames as $name) {
-                if (empty($name))
+                if (empty($name)) {
                     continue;
+                }
                 $tag = Tag::firstOrCreate(['name' => $name], ['slug' => Str::slug($name)]);
                 $tagIds[] = $tag->id;
             }
@@ -137,7 +183,13 @@ class PostForm extends Component
             $this->post->addMedia($this->cover_image)->toMediaCollection('cover');
         }
 
+        if ($this->avatar_image) {
+            $this->post->clearMediaCollection('avatar');
+            $this->post->addMedia($this->avatar_image)->toMediaCollection('avatar');
+        }
+
         session()->flash('status', 'Post saved successfully.');
+
         return redirect()->route('posts.index');
     }
 
@@ -148,6 +200,7 @@ class PostForm extends Component
             if (str_contains($url, '/embed/')) {
                 return $url;
             }
+
             return str_replace('open.spotify.com/', 'open.spotify.com/embed/', $url);
         }
 
@@ -161,16 +214,18 @@ class PostForm extends Component
             if ($videoId) {
                 return "https://www.youtube.com/embed/{$videoId}";
             }
+
             return $url; // Fallback
         }
 
         return $url;
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.admin.post-form', [
             'types' => PostType::cases(),
+            'snsTypes' => SnsType::cases(),
         ]);
     }
 }

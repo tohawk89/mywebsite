@@ -84,6 +84,47 @@
                             </div>
                         @endif
 
+                        <!-- Profile Description -->
+                        @if($type === 'profile')
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase">Description</label>
+                                <textarea wire:model="content" class="form-control rounded-0 bg-light border-0" rows="4"
+                                    placeholder="Short bio or description..."></textarea>
+                                @error('content') <span class="text-danger small">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- SNS Links -->
+                            <div class="mb-2">
+                                <label class="form-label fw-bold small text-uppercase">Social Links</label>
+                                @foreach($sns as $index => $link)
+                                    <div class="d-flex gap-2 mb-2 align-items-start" wire:key="sns-{{ $index }}">
+                                        <select wire:model="sns.{{ $index }}.platform"
+                                            class="form-select rounded-0 bg-light border-0" style="max-width: 160px;">
+                                            @foreach($snsTypes as $snsType)
+                                                <option value="{{ $snsType->value }}">{{ $snsType->label() }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="flex-grow-1">
+                                            <input type="url" wire:model="sns.{{ $index }}.url"
+                                                class="form-control rounded-0 bg-light border-0"
+                                                placeholder="https://...">
+                                            @error("sns.{$index}.url")
+                                                <span class="text-danger small">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <button type="button" wire:click="removeSns({{ $index }})"
+                                            class="btn btn-outline-danger rounded-0 btn-sm px-2">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                @endforeach
+                                <button type="button" wire:click="addSns"
+                                    class="btn btn-outline-secondary rounded-0 btn-sm mt-1">
+                                    <i class="bi bi-plus-lg me-1"></i> Add Social Link
+                                </button>
+                            </div>
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -140,6 +181,27 @@
                                 @elseif($post && $post->hasMedia('cover'))
                                     <div class="mt-2 text-muted small">Current Image:</div>
                                     <img src="{{ $post->getFirstMediaUrl('cover') }}" class="img-fluid w-100 mt-1">
+                                @endif
+                            </div>
+                        @endif
+
+                        <!-- Avatar Image -->
+                        @if($type === 'profile')
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase">Profile Picture</label>
+                                <input type="file" wire:model="avatar_image"
+                                    class="form-control rounded-0 bg-light border-0">
+                                @error('avatar_image') <span class="text-danger small">{{ $message }}</span> @enderror
+
+                                @if ($avatar_image)
+                                    <div class="mt-2">
+                                        <img src="{{ $avatar_image->temporaryUrl() }}"
+                                            class="rounded-circle mt-1" style="width:80px; height:80px; object-fit:cover;">
+                                    </div>
+                                @elseif($post && $post->hasMedia('avatar'))
+                                    <div class="mt-2 text-muted small">Current Picture:</div>
+                                    <img src="{{ $post->getFirstMediaUrl('avatar') }}"
+                                        class="rounded-circle mt-1" style="width:80px; height:80px; object-fit:cover;">
                                 @endif
                             </div>
                         @endif

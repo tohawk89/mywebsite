@@ -44,16 +44,34 @@
                                 @endif
                             </td>
                             <td class="pe-4 py-3 text-end">
-                                <div class="btn-group">
-                                    <a href="{{ route('posts.edit', $post) }}"
-                                        class="btn btn-sm btn-outline-dark rounded-0 border-end-0" wire:navigate>
-                                        Edit
-                                    </a>
-                                    <button wire:click="delete({{ $post->id }})"
-                                        wire:confirm="Are you sure you want to delete this post?"
-                                        class="btn btn-sm btn-outline-danger rounded-0">
-                                        Delete
-                                    </button>
+                                <div class="d-flex justify-content-end gap-1">
+                                    @if($post->is_pinned)
+                                        <div class="btn-group btn-group-sm me-1">
+                                            <button wire:click="moveUp({{ $post->id }})"
+                                                class="btn btn-outline-secondary rounded-0"
+                                                @disabled($post->id === $firstPinnedId)
+                                                title="Move up">
+                                                <i class="bi bi-chevron-up"></i>
+                                            </button>
+                                            <button wire:click="moveDown({{ $post->id }})"
+                                                class="btn btn-outline-secondary rounded-0"
+                                                @disabled($post->id === $lastPinnedId)
+                                                title="Move down">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </button>
+                                        </div>
+                                    @endif
+                                    <div class="btn-group">
+                                        <a href="{{ route('posts.edit', $post) }}"
+                                            class="btn btn-sm btn-outline-dark rounded-0 border-end-0" wire:navigate>
+                                            Edit
+                                        </a>
+                                        <button wire:click="delete({{ $post->id }})"
+                                            wire:confirm="Are you sure you want to delete this post?"
+                                            class="btn btn-sm btn-outline-danger rounded-0">
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                             </td>
                         </tr>

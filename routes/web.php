@@ -1,20 +1,18 @@
 <?php
 
+use App\Livewire\Admin\Dashboard;
+use App\Livewire\Admin\PostForm;
+use App\Livewire\Admin\PostIndex;
+use App\Livewire\Admin\SiteSettings;
 use App\Livewire\PostFeed;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
-use App\Livewire\Admin\PostIndex;
-use App\Livewire\Admin\PostForm;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::get('/', PostFeed::class)->name('home');
-
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -33,7 +31,13 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
-    Route::get('posts', PostIndex::class)->name('posts.index');
-    Route::get('posts/create', PostForm::class)->name('posts.create');
-    Route::get('posts/{post}/edit', PostForm::class)->name('posts.edit');
+
+    // admin group
+    Route::middleware(['admin'])->prefix('admin')->group(function () {
+        Route::get('dashboard', Dashboard::class)->name('dashboard');
+        Route::get('posts', PostIndex::class)->name('posts.index');
+        Route::get('posts/create', PostForm::class)->name('posts.create');
+        Route::get('posts/{post}/edit', PostForm::class)->name('posts.edit');
+        Route::get('settings', SiteSettings::class)->name('settings');
+    });
 });

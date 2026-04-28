@@ -3,18 +3,16 @@
 namespace App\Models;
 
 use App\Enums\PostType;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
 class Post extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\PostFactory> */
-
-    use HasFactory, InteractsWithMedia, HasUuids;
+    use HasFactory, HasUuids, InteractsWithMedia;
 
     protected $fillable = [
         'type',
@@ -48,6 +46,9 @@ class Post extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('cover')
+            ->singleFile();
+
+        $this->addMediaCollection('avatar')
             ->singleFile();
     }
 

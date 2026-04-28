@@ -12,6 +12,11 @@ class PostFeed extends Component
 
     public $perPage = 10;
 
+    public function mount(): void
+    {
+        $this->perPage = config('site.posts_per_page', 10);
+    }
+
     // We maintain a list of loaded post IDs to avoid duplicates if we were appending manually,
     // but Livewire pagination handles this well if we just render the paginated result.
     // However, for masonry + infinite scroll, we commonly append.
@@ -30,11 +35,12 @@ class PostFeed extends Component
 
         // We exclude 'PAGE' type (About/Contact) from the feed.
         $posts = Post::where('type', '!=', \App\Enums\PostType::PAGE)
+            ->whereNotNull('posted_at')
             ->pinnedFirst()
             ->paginate($this->perPage);
 
         return view('livewire.post-feed', [
-            'posts' => $posts
+            'posts' => $posts,
         ]);
     }
 }
