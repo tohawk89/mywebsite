@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
 class CreateUser extends Command
 {
@@ -22,12 +22,12 @@ class CreateUser extends Command
      *
      * @var string
      */
-    protected $description = 'Create a new user manually';
+    protected $description = 'Create a new admin user manually';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $name = $this->argument('name') ?? $this->ask('Name');
         $email = $this->argument('email') ?? $this->ask('Email');
@@ -47,6 +47,7 @@ class CreateUser extends Command
             foreach ($validator->errors()->all() as $error) {
                 $this->error($error);
             }
+
             return 1;
         }
 
@@ -54,6 +55,7 @@ class CreateUser extends Command
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
+            'is_admin' => true,
         ]);
 
         $this->info("User {$user->email} created successfully!");

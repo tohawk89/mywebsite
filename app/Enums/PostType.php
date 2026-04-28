@@ -7,6 +7,7 @@ enum PostType: string
     case BLOG = 'blog';
     case SPOTIFY = 'spotify';
     case YOUTUBE = 'youtube';
+    case INSTAGRAM = 'instagram';
     case QUOTE = 'quote';
     case PAGE = 'page'; // For About, Contact
     case IMAGE = 'image';
@@ -19,6 +20,7 @@ enum PostType: string
             self::BLOG => 'Blog Post',
             self::SPOTIFY => 'Spotify Embed',
             self::YOUTUBE => 'YouTube Video',
+            self::INSTAGRAM => 'Instagram Post',
             self::QUOTE => 'Quote',
             self::PAGE => 'Page',
             self::IMAGE => 'Image',

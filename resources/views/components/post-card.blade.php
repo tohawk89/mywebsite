@@ -7,6 +7,7 @@
          match ($post->type) {
         PostType::SPOTIFY => '#90EE90',
         PostType::YOUTUBE => '#FFCCCB',
+    PostType::INSTAGRAM => '#FFE4D6',
         PostType::QUOTE => '#FFFFE0',
         PostType::PROFILE => '#E6E6FA', // Lavender for Profile
         default => '#ffffff'
@@ -69,46 +70,54 @@
             </div>
         </div>
 
-        {{-- OTHER CARDS (EXISTING LOGIC) --}}
-    @else
-        {{-- Image Display (for Blog/Standard) --}}
-        @if($post->hasMedia('cover') && $post->type !== PostType::QUOTE && $post->type !== PostType::SPOTIFY && $post->type !== PostType::YOUTUBE)
-            <img src="{{ $post->getFirstMediaUrl('cover') }}" class="card-img-top rounded-0" alt="{{ $post->title }}">
-        @endif
-
-        {{-- YouTube Embed --}}
-        @if($post->type === PostType::YOUTUBE && isset($post->meta_data['embed_url']))
+        {{-- YOUTUBE CARD --}}
+    @elseif($post->type === PostType::YOUTUBE)
+        @if(isset($post->meta_data['embed_url']))
             <div class="ratio ratio-16x9">
-                <iframe src="{{ $post->meta_data['embed_url'] }}" title="YouTube video" allowfullscreen
+                <iframe src="{{ $post->meta_data['embed_url'] }}" title="{{ $post->title }}" allowfullscreen
                     class="rounded-0"></iframe>
             </div>
         @endif
+        <div class="card-body">
+            <h5 class="card-title fw-bold font-sans mb-0">{{ $post->title }}</h5>
+        </div>
 
-        {{-- Spotify Embed --}}
-        @if($post->type === PostType::SPOTIFY && isset($post->meta_data['spotify_url']))
+        {{-- SPOTIFY CARD --}}
+    @elseif($post->type === PostType::SPOTIFY)
+        @if(isset($post->meta_data['spotify_url']))
             <div class="p-3 pb-0">
                 <iframe style="border-radius:0px" src="{{ $post->meta_data['spotify_url'] }}" width="100%" height="152"
                     frameBorder="0" allowfullscreen=""
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"
+                    title="{{ $post->title }}"></iframe>
             </div>
+        @endif
+        <div class="card-body">
+            <h5 class="card-title fw-bold font-sans mb-0">{{ $post->title }}</h5>
+        </div>
+
+        {{-- INSTAGRAM CARD --}}
+    @elseif($post->type === PostType::INSTAGRAM)
+        @if(isset($post->meta_data['instagram_embed_url']))
+            <div class="p-3 pb-0">
+                <iframe src="{{ $post->meta_data['instagram_embed_url'] }}" width="100%" height="560" frameborder="0"
+                    scrolling="no" allowtransparency="true" loading="lazy" title="{{ $post->title }}"></iframe>
+            </div>
+        @endif
+        <div class="card-body">
+            <x-post-tags :tags="$post->tags" />
+            <h5 class="card-title fw-bold font-sans mb-0">{{ $post->title }}</h5>
+        </div>
+
+        {{-- BLOG / QUOTE / PAGE / PROJECT --}}
+    @else
+        {{-- Cover Image --}}
+        @if($post->hasMedia('cover'))
+            <img src="{{ $post->getFirstMediaUrl('cover') }}" class="card-img-top rounded-0" alt="{{ $post->title }}">
         @endif
 
         <div class="card-body d-flex flex-column">
-            {{-- Tags --}}
-            @if($post->tags->isNotEmpty())
-                <div class="mb-2">
-                    @foreach($post->tags as $tag)
-                        @php
-                            $colors = ['primary', 'success', 'danger', 'warning', 'info', 'secondary', 'dark'];
-                            // Simple hash to pick a consistent color
-                            $colorIndex = crc32($tag->name) % count($colors);
-                            $color = $colors[$colorIndex];
-                        @endphp
-                        <span
-                            class="badge bg-{{ $color }}-subtle text-{{ $color }} rounded-0 mb-1 border border-{{ $color }}-subtle">{{ $tag->name }}</span>
-                    @endforeach
-                </div>
-            @endif
+            <x-post-tags :tags="$post->tags" />
 
             <h5 class="card-title fw-bold font-sans">{{ $post->title }}</h5>
 

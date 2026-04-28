@@ -37,6 +37,8 @@ class PostForm extends Component
 
     public $youtube_url = '';
 
+    public $instagram_url = '';
+
     // Profile Fields
     /** @var array<int, array{platform: string, url: string}> */
     public array $sns = [];
@@ -62,6 +64,7 @@ class PostForm extends Component
             // Meta Data
             $this->spotify_url = $post->meta_data['spotify_url'] ?? '';
             $this->youtube_url = $post->meta_data['youtube_url'] ?? '';
+            $this->instagram_url = $post->meta_data['instagram_url'] ?? '';
             $this->sns = $post->meta_data['sns'] ?? [];
         } else {
             $this->type = PostType::BLOG->value;
@@ -92,6 +95,10 @@ class PostForm extends Component
 
         if ($this->type === PostType::YOUTUBE->value) {
             $rules['youtube_url'] = ['required', 'url', 'regex:/youtube\.com|youtu\.be/'];
+        }
+
+        if ($this->type === PostType::INSTAGRAM->value) {
+            $rules['instagram_url'] = ['required', 'url', 'regex:/instagram\.com\/(p|reel)\//'];
         }
 
         if ($this->type === PostType::QUOTE->value) {
@@ -132,6 +139,9 @@ class PostForm extends Component
         } elseif ($this->type === PostType::YOUTUBE->value) {
             $metaData['youtube_url'] = $this->youtube_url;
             $metaData['embed_url'] = $this->getEmbedUrl($this->youtube_url, 'youtube');
+        } elseif ($this->type === PostType::INSTAGRAM->value) {
+            $metaData['instagram_url'] = $this->instagram_url;
+            $metaData['instagram_embed_url'] = $this->getEmbedUrl($this->instagram_url, 'instagram');
         } elseif ($this->type === PostType::PROFILE->value) {
             $metaData['sns'] = $this->sns;
         }
@@ -216,6 +226,17 @@ class PostForm extends Component
             }
 
             return $url; // Fallback
+        }
+
+        if ($type === 'instagram') {
+            $path = trim(parse_url($url, PHP_URL_PATH) ?? '', '/');
+            $segments = array_values(array_filter(explode('/', $path)));
+
+            if (count($segments) >= 2 && in_array($segments[0], ['p', 'reel'], true)) {
+                return "https://www.instagram.com/{$segments[0]}/{$segments[1]}/embed";
+            }
+
+            return $url;
         }
 
         return $url;
