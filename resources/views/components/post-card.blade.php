@@ -74,7 +74,7 @@
     @elseif($post->type === PostType::YOUTUBE)
         @if(isset($post->meta_data['embed_url']))
             <div class="ratio ratio-16x9">
-                <iframe src="{{ $post->meta_data['embed_url'] }}" title="{{ $post->title }}" allowfullscreen
+                <iframe wire:key="iframe-{{ $post->id }}" src="{{ $post->meta_data['embed_url'] }}" title="{{ $post->title }}" allowfullscreen
                     class="rounded-0"></iframe>
             </div>
         @endif
@@ -86,7 +86,7 @@
     @elseif($post->type === PostType::SPOTIFY)
         @if(isset($post->meta_data['spotify_url']))
             <div class="p-3 pb-0">
-                <iframe style="border-radius:0px" src="{{ $post->meta_data['spotify_url'] }}" width="100%" height="152"
+                <iframe wire:key="iframe-{{ $post->id }}" style="border-radius:0px" src="{{ $post->meta_data['spotify_url'] }}" width="100%" height="152"
                     frameBorder="0" allowfullscreen=""
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"
                     title="{{ $post->title }}"></iframe>
@@ -100,7 +100,7 @@
     @elseif($post->type === PostType::INSTAGRAM)
         @if(isset($post->meta_data['instagram_embed_url']))
             <div class="p-3 pb-0">
-                <iframe src="{{ $post->meta_data['instagram_embed_url'] }}" width="100%" height="560" frameborder="0"
+                <iframe wire:key="iframe-{{ $post->id }}" src="{{ $post->meta_data['instagram_embed_url'] }}" width="100%" height="560" frameborder="0"
                     scrolling="no" allowtransparency="true" loading="lazy" title="{{ $post->title }}"></iframe>
             </div>
         @endif
