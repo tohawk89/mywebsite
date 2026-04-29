@@ -204,12 +204,12 @@ class PostForm extends Component
         // Handle Media
         if ($this->cover_image) {
             $this->post->clearMediaCollection('cover');
-            $this->post->addMedia($this->cover_image)->toMediaCollection('cover');
+            $this->post->addMediaFromDisk($this->cover_image->path(), 's3')->toMediaCollection('cover');
         }
 
         if ($this->avatar_image) {
             $this->post->clearMediaCollection('avatar');
-            $this->post->addMedia($this->avatar_image)->toMediaCollection('avatar');
+            $this->post->addMediaFromDisk($this->avatar_image->path(), 's3')->toMediaCollection('avatar');
         }
 
         $statusMessage = $isDraft ? 'Post saved as draft.' : 'Post published successfully.';
