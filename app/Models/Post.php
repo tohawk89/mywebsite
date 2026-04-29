@@ -20,6 +20,7 @@ class Post extends Model implements HasMedia
         'content',
         'meta_data',
         'is_pinned',
+        'is_draft',
         'sort_order',
         'posted_at',
     ];
@@ -28,6 +29,7 @@ class Post extends Model implements HasMedia
         'type' => PostType::class,
         'meta_data' => 'array',
         'is_pinned' => 'boolean',
+        'is_draft' => 'boolean',
         'posted_at' => 'datetime',
     ];
 

@@ -36,6 +36,7 @@ class PostFeed extends Component
         // We exclude 'PAGE' type (About/Contact) from the feed.
         $posts = Post::where('type', '!=', \App\Enums\PostType::PAGE)
             ->whereNotNull('posted_at')
+            ->where('is_draft', false)
             ->pinnedFirst()
             ->paginate($this->perPage);
 

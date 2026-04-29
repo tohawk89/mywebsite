@@ -143,9 +143,13 @@
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-0 mb-4">
                     <div class="card-body p-4">
-                        <div class="d-grid mb-4">
+                    <div class="d-grid gap-2 mb-4">
                             <button type="submit" class="btn btn-dark rounded-0 py-2 fw-bold text-uppercase">
-                                {{ $post ? 'Update Post' : 'Publish Post' }}
+                                {{ $post ? 'Update & Publish' : 'Publish Post' }}
+                            </button>
+                            <button type="button" wire:click="saveDraft"
+                                class="btn btn-outline-secondary rounded-0 py-2 fw-bold text-uppercase">
+                                Save as Draft
                             </button>
                         </div>
 

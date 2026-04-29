@@ -38,9 +38,13 @@
                                 <div class="small text-muted">{{ $post->created_at->format('H:i') }}</div>
                             </td>
                             <td class="py-3">
-                                @if($post->is_pinned)
+                                @if($post->is_draft)
+                                    <span class="badge rounded-0 bg-secondary text-white"><i class="bi bi-pencil me-1"></i>Draft</span>
+                                @elseif($post->is_pinned)
                                     <span class="badge rounded-0 bg-warning text-dark"><i
                                             class="bi bi-pin-angle-fill me-1"></i>Pinned</span>
+                                @else
+                                    <span class="badge rounded-0 bg-success text-white">Published</span>
                                 @endif
                             </td>
                             <td class="pe-4 py-3 text-end">

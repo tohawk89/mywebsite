@@ -28,6 +28,8 @@ class PostForm extends Component
 
     public $is_pinned = false;
 
+    public $is_draft = false;
+
     public $posted_at;
 
     public $tags = ''; // Comma separated tags
@@ -56,6 +58,7 @@ class PostForm extends Component
             $this->title = $post->title;
             $this->content = $post->content;
             $this->is_pinned = $post->is_pinned;
+            $this->is_draft = $post->is_draft;
             $this->posted_at = $post->posted_at?->format('Y-m-d\TH:i');
 
             // Tags
@@ -129,7 +132,17 @@ class PostForm extends Component
         $this->sns = array_values($this->sns);
     }
 
-    public function save()
+    public function saveDraft(): void
+    {
+        $this->persistPost(isDraft: true);
+    }
+
+    public function save(): void
+    {
+        $this->persistPost(isDraft: false);
+    }
+
+    private function persistPost(bool $isDraft): void
     {
         $this->validate();
 
@@ -153,8 +166,9 @@ class PostForm extends Component
             'title' => $this->title,
             'content' => $this->content,
             'is_pinned' => $this->is_pinned,
+            'is_draft' => $isDraft,
             'posted_at' => $this->posted_at,
-            'meta_data' => $metaData, // Eloquent will cast to JSON
+            'meta_data' => $metaData,
         ];
 
         if ($this->post) {
@@ -198,9 +212,10 @@ class PostForm extends Component
             $this->post->addMedia($this->avatar_image)->toMediaCollection('avatar');
         }
 
-        session()->flash('status', 'Post saved successfully.');
+        $statusMessage = $isDraft ? 'Post saved as draft.' : 'Post published successfully.';
+        session()->flash('status', $statusMessage);
 
-        return redirect()->route('posts.index');
+        $this->redirect(route('posts.index'), navigate: true);
     }
 
     private function getEmbedUrl($url, $type)
