@@ -30,4 +30,26 @@ class PostFactory extends Factory
             'meta_data' => ['sns' => []],
         ]);
     }
+
+    public function repository(): static
+    {
+        return $this->state([
+            'type' => PostType::REPOSITORY,
+            'title' => 'laravel/framework',
+            'content' => null,
+            'meta_data' => [
+                'repo_url' => 'https://github.com/laravel/framework',
+                'repo_name' => 'laravel/framework',
+                'repo_description' => 'The Laravel Framework.',
+                'language' => 'PHP',
+                'stars' => 33000,
+                'forks' => 11000,
+                'topics' => ['laravel', 'php', 'framework'],
+                'owner_avatar' => 'https://avatars.githubusercontent.com/u/958072?v=4',
+                'fetched_at' => now()->toIso8601String(),
+                'title' => null,
+                'note' => null,
+            ],
+        ]);
+    }
 }

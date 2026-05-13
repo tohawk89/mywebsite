@@ -6,6 +6,7 @@ use App\Enums\PostType;
 use App\Enums\SnsType;
 use App\Models\Post;
 use App\Models\Tag;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -41,6 +42,13 @@ class PostForm extends Component
 
     public $instagram_url = '';
 
+    // Repository Fields
+    public $repo_url = '';
+
+    public $repo_title = '';
+
+    public $repo_note = '';
+
     // Profile Fields
     /** @var array<int, array{platform: string, url: string}> */
     public array $sns = [];
@@ -68,6 +76,9 @@ class PostForm extends Component
             $this->spotify_url = $post->meta_data['spotify_url'] ?? '';
             $this->youtube_url = $post->meta_data['youtube_url'] ?? '';
             $this->instagram_url = $post->meta_data['instagram_url'] ?? '';
+            $this->repo_url = $post->meta_data['repo_url'] ?? '';
+            $this->repo_title = $post->meta_data['title'] ?? '';
+            $this->repo_note = $post->meta_data['note'] ?? '';
             $this->sns = $post->meta_data['sns'] ?? [];
         } else {
             $this->type = PostType::BLOG->value;
@@ -102,6 +113,12 @@ class PostForm extends Component
 
         if ($this->type === PostType::INSTAGRAM->value) {
             $rules['instagram_url'] = ['required', 'url', 'regex:/instagram\.com\/(p|reel)\//'];
+        }
+
+        if ($this->type === PostType::REPOSITORY->value) {
+            $rules['repo_url'] = ['required', 'url', 'regex:/github\.com|gitlab\.com|bitbucket\.org/'];
+            $rules['repo_title'] = ['nullable', 'string', 'max:255'];
+            $rules['repo_note'] = ['nullable', 'string', 'max:500'];
         }
 
         if ($this->type === PostType::QUOTE->value) {
@@ -155,11 +172,24 @@ class PostForm extends Component
         } elseif ($this->type === PostType::INSTAGRAM->value) {
             $metaData['instagram_url'] = $this->instagram_url;
             $metaData['instagram_embed_url'] = $this->getEmbedUrl($this->instagram_url, 'instagram');
+        } elseif ($this->type === PostType::REPOSITORY->value) {
+            $repoData = $this->fetchRepoData($this->repo_url);
+            $metaData = array_merge($repoData, [
+                'repo_url' => $this->repo_url,
+                'title' => $this->repo_title ?: null,
+                'note' => $this->repo_note ?: null,
+                'fetched_at' => now()->toIso8601String(),
+            ]);
         } elseif ($this->type === PostType::PROFILE->value) {
             $metaData['sns'] = $this->sns;
         }
 
         $wasNotPinned = ! ($this->post?->is_pinned ?? false);
+
+        // Auto-populate post title from repo name for repository posts
+        if ($this->type === PostType::REPOSITORY->value && empty($this->title)) {
+            $this->title = $metaData['repo_name'] ?? $this->repo_url;
+        }
 
         $data = [
             'type' => $this->type,
@@ -216,6 +246,44 @@ class PostForm extends Component
         session()->flash('status', $statusMessage);
 
         $this->redirect(route('posts.index'), navigate: true);
+    }
+
+    private function fetchRepoData(string $url): array
+    {
+        $path = trim(parse_url($url, PHP_URL_PATH) ?? '', '/');
+        $segments = array_values(array_filter(explode('/', $path)));
+
+        if (count($segments) < 2) {
+            return ['repo_name' => $path ?: $url];
+        }
+
+        $owner = $segments[0];
+        $repo = $segments[1];
+
+        if (! str_contains($url, 'github.com')) {
+            return ['repo_name' => "{$owner}/{$repo}"];
+        }
+
+        $response = Http::withHeaders([
+            'Accept' => 'application/vnd.github.v3+json',
+            'User-Agent' => config('app.name', 'Laravel'),
+        ])->get("https://api.github.com/repos/{$owner}/{$repo}");
+
+        if (! $response->successful()) {
+            return ['repo_name' => "{$owner}/{$repo}"];
+        }
+
+        $data = $response->json();
+
+        return [
+            'repo_name' => $data['full_name'] ?? "{$owner}/{$repo}",
+            'repo_description' => $data['description'] ?? null,
+            'language' => $data['language'] ?? null,
+            'stars' => $data['stargazers_count'] ?? 0,
+            'forks' => $data['forks_count'] ?? 0,
+            'topics' => $data['topics'] ?? [],
+            'owner_avatar' => $data['owner']['avatar_url'] ?? null,
+        ];
     }
 
     private function getEmbedUrl($url, $type)

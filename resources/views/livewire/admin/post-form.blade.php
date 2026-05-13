@@ -35,6 +35,7 @@
                     <div class="card-body p-4">
 
                         <!-- Title (Common) -->
+                        @if($type !== 'repository')
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-uppercase">
                                 {{ $type === 'quote' ? 'Author / Source' : 'Title' }}
@@ -43,6 +44,7 @@
                                 class="form-control rounded-0 form-control-lg bg-light border-0">
                             @error('title') <span class="text-danger small">{{ $message }}</span> @enderror
                         </div>
+                        @endif
 
                         <!-- Blog Content -->
                         @if($type === 'blog' || $type === 'page' || $type === 'project')
@@ -91,6 +93,29 @@
                                 <input type="url" wire:model="instagram_url" class="form-control rounded-0 bg-light border-0"
                                     placeholder="https://www.instagram.com/p/... or /reel/...">
                                 @error('instagram_url') <span class="text-danger small">{{ $message }}</span> @enderror
+                            </div>
+                        @endif
+
+                        <!-- Repository Fields -->
+                        @if($type === 'repository')
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase">Repository URL</label>
+                                <input type="url" wire:model="repo_url" class="form-control rounded-0 bg-light border-0"
+                                    placeholder="https://github.com/owner/repo">
+                                <div class="form-text small">GitHub repository URL. Metadata will be fetched automatically on save.</div>
+                                @error('repo_url') <span class="text-danger small">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase">Personal Caption <span class="text-muted fw-normal">(optional)</span></label>
+                                <input type="text" wire:model="repo_title" class="form-control rounded-0 bg-light border-0"
+                                    placeholder="e.g. What I used for my website">
+                                @error('repo_title') <span class="text-danger small">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase">Personal Note <span class="text-muted fw-normal">(optional)</span></label>
+                                <textarea wire:model="repo_note" class="form-control rounded-0 bg-light border-0" rows="3"
+                                    placeholder="Great package, makes uploads trivial..."></textarea>
+                                @error('repo_note') <span class="text-danger small">{{ $message }}</span> @enderror
                             </div>
                         @endif
 

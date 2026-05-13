@@ -13,6 +13,7 @@ enum PostType: string
     case IMAGE = 'image';
     case PROJECT = 'project';
     case PROFILE = 'profile';
+    case REPOSITORY = 'repository';
 
     public function label(): string
     {
@@ -26,6 +27,7 @@ enum PostType: string
             self::IMAGE => 'Image',
             self::PROJECT => 'Project',
             self::PROFILE => 'Profile',
+            self::REPOSITORY => 'Git Repository',
         };
     }
 }
