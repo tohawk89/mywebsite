@@ -30,15 +30,46 @@ return [
 
     /*
     |---------------------------------------------------------------------------
-    | Layout
+    | Component Locations
+    |---------------------------------------------------------------------------
+    |
+    | This value sets the root directories that'll be used to resolve view-based
+    | components like single and multi-file components. The make command will
+    | use the first directory in this array to add new component files to.
+    |
+    */
+
+    'component_locations' => [
+        resource_path('views/components'),
+        resource_path('views/livewire'),
+    ],
+
+    /*
+    |---------------------------------------------------------------------------
+    | Component Namespaces
+    |---------------------------------------------------------------------------
+    |
+    | This value sets namespaces used to resolve view-based components. The
+    | 'layouts' namespace points to the existing layouts directory so that
+    | layouts::app and layouts::admin resolve correctly.
+    |
+    */
+
+    'component_namespaces' => [
+        'layouts' => resource_path('views/components/layouts'),
+    ],
+
+    /*
+    |---------------------------------------------------------------------------
+    | Page Layout
     |---------------------------------------------------------------------------
     | The view that will be used as the layout when rendering a single component
-    | as an entire page via `Route::get('/post/create', CreatePost::class);`.
+    | as an entire page via `Route::livewire('/post/create', CreatePost::class)`.
     | In this case, the view returned by CreatePost will render into $slot.
     |
     */
 
-    'layout' => 'components.layouts.app',
+    'component_layout' => 'layouts::app',
 
     /*
     |---------------------------------------------------------------------------
@@ -50,7 +81,32 @@ return [
     |
     */
 
-    'lazy_placeholder' => null,
+    'component_placeholder' => null,
+
+    /*
+    |---------------------------------------------------------------------------
+    | Make Command
+    |---------------------------------------------------------------------------
+    | This value determines the default configuration for the artisan make
+    | command. Using 'class' matches the v3 class-based component behavior.
+    |
+    */
+
+    'make_command' => [
+        'type' => 'class', // Options: 'sfc', 'mfc', 'class'
+        'emoji' => false,
+    ],
+
+    /*
+    |---------------------------------------------------------------------------
+    | CSP Safe Mode
+    |---------------------------------------------------------------------------
+    |
+    | Enable Content Security Policy mode to avoid unsafe-eval violations.
+    |
+    */
+
+    'csp_safe' => false,
 
     /*
     |---------------------------------------------------------------------------
@@ -156,7 +212,7 @@ return [
     |
     */
 
-    'smart_wire_keys' => false,
+    'smart_wire_keys' => true,
 
     /*
     |---------------------------------------------------------------------------

@@ -12,16 +12,16 @@ use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::get('/', PostFeed::class)->name('home');
+Route::livewire('/', PostFeed::class)->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
-    Route::get('settings/profile', Profile::class)->name('profile.edit');
-    Route::get('settings/password', Password::class)->name('user-password.edit');
-    Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
+    Route::livewire('settings/profile', Profile::class)->name('profile.edit');
+    Route::livewire('settings/password', Password::class)->name('user-password.edit');
+    Route::livewire('settings/appearance', Appearance::class)->name('appearance.edit');
 
-    Route::get('settings/two-factor', TwoFactor::class)
+    Route::livewire('settings/two-factor', TwoFactor::class)
         ->middleware(
             when(
                 Features::canManageTwoFactorAuthentication()
@@ -34,10 +34,10 @@ Route::middleware(['auth'])->group(function () {
 
     // admin group
     Route::middleware(['admin'])->prefix('admin')->group(function () {
-        Route::get('dashboard', Dashboard::class)->name('dashboard');
-        Route::get('posts', PostIndex::class)->name('posts.index');
-        Route::get('posts/create', PostForm::class)->name('posts.create');
-        Route::get('posts/{post}/edit', PostForm::class)->name('posts.edit');
-        Route::get('settings', SiteSettings::class)->name('settings');
+        Route::livewire('dashboard', Dashboard::class)->name('dashboard');
+        Route::livewire('posts', PostIndex::class)->name('posts.index');
+        Route::livewire('posts/create', PostForm::class)->name('posts.create');
+        Route::livewire('posts/{post}/edit', PostForm::class)->name('posts.edit');
+        Route::livewire('settings', SiteSettings::class)->name('settings');
     });
 });

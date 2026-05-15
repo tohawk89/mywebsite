@@ -11,9 +11,10 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\FileUploadConfiguration;
 use Livewire\WithFileUploads;
 
-#[Layout('components.layouts.admin')]
+#[Layout('layouts::admin')]
 class PostForm extends Component
 {
     use WithFileUploads;
@@ -234,12 +235,22 @@ class PostForm extends Component
         // Handle Media
         if ($this->cover_image) {
             $this->post->clearMediaCollection('cover');
-            $this->post->addMediaFromDisk($this->cover_image->path(), config('media-library.disk_name'))->toMediaCollection('cover');
+            $this->post->addMediaFromDisk(
+                FileUploadConfiguration::path($this->cover_image->getFilename(), false),
+                FileUploadConfiguration::disk()
+            )
+                ->usingFileName($this->cover_image->getClientOriginalName())
+                ->toMediaCollection('cover');
         }
 
         if ($this->avatar_image) {
             $this->post->clearMediaCollection('avatar');
-            $this->post->addMediaFromDisk($this->avatar_image->path(), config('media-library.disk_name'))->toMediaCollection('avatar');
+            $this->post->addMediaFromDisk(
+                FileUploadConfiguration::path($this->avatar_image->getFilename(), false),
+                FileUploadConfiguration::disk()
+            )
+                ->usingFileName($this->avatar_image->getClientOriginalName())
+                ->toMediaCollection('avatar');
         }
 
         $statusMessage = $isDraft ? 'Post saved as draft.' : 'Post published successfully.';
