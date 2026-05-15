@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\PostType;
+// use App\Enums\PostType;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +26,7 @@ class Post extends Model implements HasMedia
     ];
 
     protected $casts = [
-        'type' => PostType::class,
+        // 'type' => PostType::class,
         'meta_data' => 'array',
         'is_pinned' => 'boolean',
         'is_draft' => 'boolean',

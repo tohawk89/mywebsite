@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\PostType;
 use App\Models\Post;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -25,7 +24,7 @@ new #[Layout('layouts::app')] class extends Component {
     #[Computed]
     public function posts()
     {
-        return Post::where('type', '!=', PostType::PAGE)
+        return Post::where('type', '!=', 'page')
             ->whereNotNull('posted_at')
             ->where('is_draft', false)
             ->pinnedFirst()
@@ -37,13 +36,11 @@ new #[Layout('layouts::app')] class extends Component {
 <div class="container text-center py-4">
     <div class="row g-2" id="masonry-grid" data-masonry='{"percentPosition": true }' wire:ignore.self>
         @foreach($this->posts as $post)
-            @php
-                $isDoubleWidth = in_array($post->type->value, ['IMAGE', 'YOUTUBE']);
-                $colClass = $isDoubleWidth ? 'col-12 col-md-12 col-lg-8' : 'col-12 col-md-6 col-lg-4';
-            @endphp
-            <div class="{{ $colClass }} mb-2" wire:key="post-{{ $post->id }}">
-                <x-post-card :post="$post" />
-            </div>
+            <livewire:dynamic-component
+                :is="'posts.' . $post->type"
+                :post="$post"
+                :key="'post-' . $post->id"
+            />
         @endforeach
     </div>
 
