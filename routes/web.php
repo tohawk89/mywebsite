@@ -4,7 +4,6 @@ use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\PostForm;
 use App\Livewire\Admin\PostIndex;
 use App\Livewire\Admin\SiteSettings;
-use App\Livewire\PostFeed;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -12,7 +11,7 @@ use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::livewire('/', PostFeed::class)->name('home');
+Route::livewire('/', 'pages::post-feed')->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

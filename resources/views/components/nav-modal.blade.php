@@ -1,3 +1,71 @@
+<?php
+
+use App\Models\Post;
+use Livewire\Attributes\On;
+use Livewire\Component;
+
+new class extends Component {
+    public bool $isOpen = false;
+
+    public ?string $content = null;
+
+    public ?string $title = null;
+
+    public ?string $imageUrl = null;
+
+    public array $tags = [];
+
+    public ?string $postedAt = null;
+
+    #[On('open-modal')]
+    public function openModal(?int $id = null, ?string $component = null): void
+    {
+        $post = null;
+        $this->imageUrl = null;
+        $this->tags = [];
+        $this->postedAt = null;
+
+        if ($id) {
+            $post = Post::with('tags')->find($id);
+        } elseif ($component) {
+            $post = Post::whereJsonContains('meta_data->slug', $component)->first();
+        }
+
+        if ($post) {
+            $this->title = $post->title;
+            $this->content = $post->content;
+            $this->postedAt = $post->posted_at?->format('F d, Y');
+
+            $this->tags = $post->tags->map(function ($tag) {
+                $colors = ['primary', 'success', 'danger', 'warning', 'info', 'secondary', 'dark'];
+                $colorIndex = crc32($tag->name) % count($colors);
+
+                return [
+                    'name' => $tag->name,
+                    'color' => $colors[$colorIndex],
+                ];
+            })->toArray();
+
+            if ($post->hasMedia('cover')) {
+                $this->imageUrl = $post->getFirstMediaUrl('cover');
+            }
+
+            $this->isOpen = true;
+        }
+    }
+
+    public function closeModal(): void
+    {
+        $this->isOpen = false;
+        $this->content = null;
+        $this->title = null;
+        $this->imageUrl = null;
+        $this->tags = [];
+        $this->postedAt = null;
+    }
+};
+?>
+
 <div>
     @if($isOpen)
         {{-- Backdrop --}}

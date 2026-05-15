@@ -57,6 +57,7 @@ return [
 
     'component_namespaces' => [
         'layouts' => resource_path('views/components/layouts'),
+        'pages' => resource_path('views/livewire/pages'),
     ],
 
     /*
@@ -93,7 +94,7 @@ return [
     */
 
     'make_command' => [
-        'type' => 'class', // Options: 'sfc', 'mfc', 'class'
+        'type' => 'sfc', // Options: 'sfc', 'mfc', 'class'
         'emoji' => false,
     ],
 

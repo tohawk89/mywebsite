@@ -1,6 +1,42 @@
+<?php
+
+use App\Enums\PostType;
+use App\Models\Post;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+use Livewire\WithPagination;
+
+new #[Layout('layouts::app')] class extends Component {
+    use WithPagination;
+
+    public int $perPage = 10;
+
+    public function mount(): void
+    {
+        $this->perPage = config('site.posts_per_page', 10);
+    }
+
+    public function loadMore(): void
+    {
+        $this->perPage += 10;
+    }
+
+    #[Computed]
+    public function posts()
+    {
+        return Post::where('type', '!=', PostType::PAGE)
+            ->whereNotNull('posted_at')
+            ->where('is_draft', false)
+            ->pinnedFirst()
+            ->paginate($this->perPage);
+    }
+};
+?>
+
 <div class="container text-center py-4">
     <div class="row g-2" id="masonry-grid" data-masonry='{"percentPosition": true }' wire:ignore.self>
-        @foreach($posts as $post)
+        @foreach($this->posts as $post)
             @php
                 $isDoubleWidth = in_array($post->type->value, ['IMAGE', 'YOUTUBE']);
                 $colClass = $isDoubleWidth ? 'col-12 col-md-12 col-lg-8' : 'col-12 col-md-6 col-lg-4';
@@ -13,7 +49,7 @@
 
     <div class="text-center my-5" x-data="{ intersect: false }" x-intersect="$wire.loadMore()">
 
-        @if($posts->hasMorePages())
+        @if($this->posts->hasMorePages())
             <div wire:loading>
                 <div class="spinner-border text-secondary" role="status">
                     <span class="visually-hidden">Loading...</span>

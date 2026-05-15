@@ -50,7 +50,7 @@
     @endif
 
     <!-- Modals Container -->
-    @livewire('nav-modal')
+    <livewire:nav-modal />
 
     @stack('scripts')
 </body>
