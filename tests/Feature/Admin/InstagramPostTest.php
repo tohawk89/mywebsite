@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Enums\PostType;
 use App\Livewire\Admin\PostForm;
 use App\Models\Post;
 use App\Models\User;
@@ -27,13 +26,13 @@ class InstagramPostTest extends TestCase
         $this->actingAsUser();
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::INSTAGRAM->value)
+            ->set('type', 'instagram')
             ->set('title', 'My Instagram Post')
-            ->set('instagram_url', 'https://www.instagram.com/p/Cx12345abcD/')
+            ->set('typeData', ['instagram_url' => 'https://www.instagram.com/p/Cx12345abcD/'])
             ->call('save')
             ->assertRedirect(route('posts.index'));
 
-        $post = Post::where('type', PostType::INSTAGRAM)->first();
+        $post = Post::where('type', 'instagram')->first();
 
         $this->assertNotNull($post);
         $this->assertSame('https://www.instagram.com/p/Cx12345abcD/', $post->meta_data['instagram_url']);
@@ -45,11 +44,11 @@ class InstagramPostTest extends TestCase
         $this->actingAsUser();
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::INSTAGRAM->value)
+            ->set('type', 'instagram')
             ->set('title', 'Invalid Instagram')
-            ->set('instagram_url', 'https://example.com/not-instagram')
+            ->set('typeData', ['instagram_url' => 'https://example.com/not-instagram'])
             ->call('save')
-            ->assertHasErrors(['instagram_url']);
+            ->assertHasErrors(['typeData.instagram_url']);
     }
 
     public function test_can_edit_existing_instagram_post(): void
@@ -57,7 +56,7 @@ class InstagramPostTest extends TestCase
         $this->actingAsUser();
 
         $post = Post::factory()->create([
-            'type' => PostType::INSTAGRAM,
+            'type' => 'instagram',
             'title' => 'Old Instagram',
             'meta_data' => [
                 'instagram_url' => 'https://www.instagram.com/p/OldCode12345/',
@@ -66,8 +65,8 @@ class InstagramPostTest extends TestCase
         ]);
 
         Livewire::test(PostForm::class, ['post' => $post])
-            ->assertSet('instagram_url', 'https://www.instagram.com/p/OldCode12345/')
-            ->set('instagram_url', 'https://www.instagram.com/reel/NewCode67890/')
+            ->assertSet('typeData.instagram_url', 'https://www.instagram.com/p/OldCode12345/')
+            ->set('typeData.instagram_url', 'https://www.instagram.com/reel/NewCode67890/')
             ->call('save')
             ->assertRedirect(route('posts.index'));
 
@@ -80,7 +79,7 @@ class InstagramPostTest extends TestCase
     public function test_instagram_post_renders_in_feed(): void
     {
         Post::factory()->create([
-            'type' => PostType::INSTAGRAM,
+            'type' => 'instagram',
             'title' => 'Instagram in feed',
             'posted_at' => now(),
             'meta_data' => [

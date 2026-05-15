@@ -32,9 +32,9 @@
                     <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>
                 </div>
 
-                <x-action-message class="me-3" on="profile-updated">
+                <x-ui.action-message class="me-3" on="profile-updated">
                     {{ __('Saved.') }}
-                </x-action-message>
+                </x-ui.action-message>
             </div>
         </form>
 

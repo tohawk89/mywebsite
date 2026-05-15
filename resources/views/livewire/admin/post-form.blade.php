@@ -17,13 +17,13 @@
                     <div class="card-body">
                         <label class="form-label fw-bold small text-uppercase">Post Type</label>
                         <div class="d-flex flex-wrap gap-2">
-                            @foreach($types as $enumType)
+                            @foreach($this->typesWithLabels as $typeOption)
                                 <label
-                                    class="btn btn-sm rounded-0 {{ $type === $enumType->value ? 'btn-dark' : 'btn-outline-secondary border-0 bg-light' }}"
+                                    class="btn btn-sm rounded-0 {{ $type === $typeOption['value'] ? 'btn-dark' : 'btn-outline-secondary border-0 bg-light' }}"
                                     style="min-width: 100px;">
-                                    <input type="radio" wire:model.live="type" value="{{ $enumType->value }}"
+                                    <input type="radio" wire:model.live="type" value="{{ $typeOption['value'] }}"
                                         class="d-none">
-                                    {{ $enumType->label() }}
+                                    {{ $typeOption['label'] }}
                                 </label>
                             @endforeach
                         </div>
@@ -34,131 +34,10 @@
                 <div class="card border-0 shadow-sm rounded-0 mb-4">
                     <div class="card-body p-4">
 
-                        <!-- Title (Common) -->
-                        @if($type !== 'repository')
-                        <div class="mb-4">
-                            <label class="form-label fw-bold small text-uppercase">
-                                {{ $type === 'quote' ? 'Author / Source' : 'Title' }}
-                            </label>
-                            <input type="text" wire:model="title"
-                                class="form-control rounded-0 form-control-lg bg-light border-0">
-                            @error('title') <span class="text-danger small">{{ $message }}</span> @enderror
-                        </div>
-                        @endif
-
-                        <!-- Blog Content -->
-                        @if($type === 'blog' || $type === 'page' || $type === 'project')
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">Content</label>
-                                <textarea wire:model="content" class="form-control rounded-0 bg-light border-0"
-                                    rows="12"></textarea>
-                                @error('content') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-                        @endif
-
-                        <!-- Quote Content -->
-                        @if($type === 'quote')
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">Quote Text</label>
-                                <textarea wire:model="content" class="form-control rounded-0 bg-light border-0" rows="4"
-                                    placeholder="Enter the quote here..."></textarea>
-                                @error('content') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-                        @endif
-
-                        <!-- Spotify URL -->
-                        @if($type === 'spotify')
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">Spotify Embed URL</label>
-                                <input type="url" wire:model="spotify_url" class="form-control rounded-0 bg-light border-0"
-                                    placeholder="https://open.spotify.com/track/...">
-                                @error('spotify_url') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-                        @endif
-
-                        <!-- YouTube URL -->
-                        @if($type === 'youtube')
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">YouTube Video URL</label>
-                                <input type="url" wire:model="youtube_url" class="form-control rounded-0 bg-light border-0"
-                                    placeholder="https://www.youtube.com/watch?v=...">
-                                @error('youtube_url') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-                        @endif
-
-                        <!-- Instagram URL -->
-                        @if($type === 'instagram')
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">Instagram Post URL</label>
-                                <input type="url" wire:model="instagram_url" class="form-control rounded-0 bg-light border-0"
-                                    placeholder="https://www.instagram.com/p/... or /reel/...">
-                                @error('instagram_url') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-                        @endif
-
-                        <!-- Repository Fields -->
-                        @if($type === 'repository')
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">Repository URL</label>
-                                <input type="url" wire:model="repo_url" class="form-control rounded-0 bg-light border-0"
-                                    placeholder="https://github.com/owner/repo">
-                                <div class="form-text small">GitHub repository URL. Metadata will be fetched automatically on save.</div>
-                                @error('repo_url') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">Personal Caption <span class="text-muted fw-normal">(optional)</span></label>
-                                <input type="text" wire:model="repo_title" class="form-control rounded-0 bg-light border-0"
-                                    placeholder="e.g. What I used for my website">
-                                @error('repo_title') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">Personal Note <span class="text-muted fw-normal">(optional)</span></label>
-                                <textarea wire:model="repo_note" class="form-control rounded-0 bg-light border-0" rows="3"
-                                    placeholder="Great package, makes uploads trivial..."></textarea>
-                                @error('repo_note') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-                        @endif
-
-                        <!-- Profile Description -->
-                        @if($type === 'profile')
-                            <div class="mb-4">
-                                <label class="form-label fw-bold small text-uppercase">Description</label>
-                                <textarea wire:model="content" class="form-control rounded-0 bg-light border-0" rows="4"
-                                    placeholder="Short bio or description..."></textarea>
-                                @error('content') <span class="text-danger small">{{ $message }}</span> @enderror
-                            </div>
-
-                            <!-- SNS Links -->
-                            <div class="mb-2">
-                                <label class="form-label fw-bold small text-uppercase">Social Links</label>
-                                @foreach($sns as $index => $link)
-                                    <div class="d-flex gap-2 mb-2 align-items-start" wire:key="sns-{{ $index }}">
-                                        <select wire:model="sns.{{ $index }}.platform"
-                                            class="form-select rounded-0 bg-light border-0" style="max-width: 160px;">
-                                            @foreach($snsTypes as $snsType)
-                                                <option value="{{ $snsType->value }}">{{ $snsType->label() }}</option>
-                                            @endforeach
-                                        </select>
-                                        <div class="flex-grow-1">
-                                            <input type="url" wire:model="sns.{{ $index }}.url"
-                                                class="form-control rounded-0 bg-light border-0"
-                                                placeholder="https://...">
-                                            @error("sns.{$index}.url")
-                                                <span class="text-danger small">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                        <button type="button" wire:click="removeSns({{ $index }})"
-                                            class="btn btn-outline-danger rounded-0 btn-sm px-2">
-                                            <i class="bi bi-x-lg"></i>
-                                        </button>
-                                    </div>
-                                @endforeach
-                                <button type="button" wire:click="addSns"
-                                    class="btn btn-outline-secondary rounded-0 btn-sm mt-1">
-                                    <i class="bi bi-plus-lg me-1"></i> Add Social Link
-                                </button>
-                            </div>
-                        @endif
+                        <x-dynamic-component
+                            :component="'posts.' . $type . '.form'"
+                            :type-data="$typeData"
+                        />
 
                     </div>
                 </div>
@@ -206,7 +85,7 @@
                         </div>
 
                         <!-- Cover Image -->
-                        @if($type === 'blog' || $type === 'image' || $type === 'project')
+                        @if(in_array('cover', $handler->mediaCollections()))
                             <div class="mb-4">
                                 <label class="form-label fw-bold small text-uppercase">Cover Image</label>
                                 <input type="file" wire:model="cover_image"
@@ -225,7 +104,7 @@
                         @endif
 
                         <!-- Avatar Image -->
-                        @if($type === 'profile')
+                        @if(in_array('avatar', $handler->mediaCollections()))
                             <div class="mb-4">
                                 <label class="form-label fw-bold small text-uppercase">Profile Picture</label>
                                 <input type="file" wire:model="avatar_image"

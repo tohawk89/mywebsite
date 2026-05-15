@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Enums\PostType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -13,7 +12,7 @@ class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            'type' => PostType::BLOG,
+            'type' => 'blog',
             'title' => fake()->sentence(4),
             'content' => fake()->paragraph(),
             'meta_data' => [],
@@ -26,7 +25,7 @@ class PostFactory extends Factory
     public function profile(): static
     {
         return $this->state([
-            'type' => PostType::PROFILE,
+            'type' => 'profile',
             'meta_data' => ['sns' => []],
         ]);
     }
@@ -34,7 +33,7 @@ class PostFactory extends Factory
     public function repository(): static
     {
         return $this->state([
-            'type' => PostType::REPOSITORY,
+            'type' => 'repository',
             'title' => 'laravel/framework',
             'content' => null,
             'meta_data' => [

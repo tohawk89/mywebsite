@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Enums\PostType;
 use App\Enums\SnsType;
 use App\Livewire\Admin\PostForm;
 use App\Models\Post;
@@ -28,13 +27,13 @@ class ProfilePostTest extends TestCase
         $this->actingAsUser();
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::PROFILE->value)
+            ->set('type', 'profile')
             ->set('title', 'John Doe')
             ->set('content', 'A short bio about me.')
             ->call('save')
             ->assertRedirect(route('posts.index'));
 
-        $post = Post::where('type', PostType::PROFILE)->first();
+        $post = Post::where('type', 'profile')->first();
         $this->assertNotNull($post);
         $this->assertSame('John Doe', $post->title);
         $this->assertSame('A short bio about me.', $post->content);
@@ -50,13 +49,13 @@ class ProfilePostTest extends TestCase
         ];
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::PROFILE->value)
+            ->set('type', 'profile')
             ->set('title', 'John Doe')
-            ->set('sns', $sns)
+            ->set('typeData', ['sns' => $sns])
             ->call('save')
             ->assertRedirect(route('posts.index'));
 
-        $post = Post::where('type', PostType::PROFILE)->first();
+        $post = Post::where('type', 'profile')->first();
         $this->assertCount(2, $post->meta_data['sns']);
         $this->assertSame(SnsType::GitHub->value, $post->meta_data['sns'][0]['platform']);
         $this->assertSame('https://github.com/johndoe', $post->meta_data['sns'][0]['url']);
@@ -67,11 +66,11 @@ class ProfilePostTest extends TestCase
         $this->actingAsUser();
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::PROFILE->value)
+            ->set('type', 'profile')
             ->set('title', 'John Doe')
-            ->set('sns', [['platform' => SnsType::GitHub->value, 'url' => 'not-a-url']])
+            ->set('typeData', ['sns' => [['platform' => SnsType::GitHub->value, 'url' => 'not-a-url']]])
             ->call('save')
-            ->assertHasErrors(['sns.0.url']);
+            ->assertHasErrors(['typeData.sns.0.url']);
     }
 
     public function test_sns_platform_must_be_valid(): void
@@ -79,11 +78,11 @@ class ProfilePostTest extends TestCase
         $this->actingAsUser();
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::PROFILE->value)
+            ->set('type', 'profile')
             ->set('title', 'John Doe')
-            ->set('sns', [['platform' => 'invalid_platform', 'url' => 'https://example.com']])
+            ->set('typeData', ['sns' => [['platform' => 'invalid_platform', 'url' => 'https://example.com']]])
             ->call('save')
-            ->assertHasErrors(['sns.0.platform']);
+            ->assertHasErrors(['typeData.sns.0.platform']);
     }
 
     public function test_add_sns_appends_new_entry_with_default_platform(): void
@@ -91,10 +90,10 @@ class ProfilePostTest extends TestCase
         $this->actingAsUser();
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::PROFILE->value)
+            ->set('type', 'profile')
             ->call('addSns')
-            ->assertSet('sns.0.platform', SnsType::GitHub->value)
-            ->assertSet('sns.0.url', '');
+            ->assertSet('typeData.sns.0.platform', SnsType::GitHub->value)
+            ->assertSet('typeData.sns.0.url', '');
     }
 
     public function test_remove_sns_deletes_entry_by_index(): void
@@ -102,14 +101,14 @@ class ProfilePostTest extends TestCase
         $this->actingAsUser();
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::PROFILE->value)
-            ->set('sns', [
+            ->set('type', 'profile')
+            ->set('typeData', ['sns' => [
                 ['platform' => SnsType::GitHub->value, 'url' => 'https://github.com/a'],
                 ['platform' => SnsType::Twitter->value, 'url' => 'https://twitter.com/b'],
-            ])
+            ]])
             ->call('removeSns', 0)
-            ->assertCount('sns', 1)
-            ->assertSet('sns.0.platform', SnsType::Twitter->value);
+            ->assertCount('typeData.sns', 1)
+            ->assertSet('typeData.sns.0.platform', SnsType::Twitter->value);
     }
 
     public function test_profile_post_title_is_required(): void
@@ -117,7 +116,7 @@ class ProfilePostTest extends TestCase
         $this->actingAsUser();
 
         Livewire::test(PostForm::class)
-            ->set('type', PostType::PROFILE->value)
+            ->set('type', 'profile')
             ->set('title', '')
             ->call('save')
             ->assertHasErrors(['title']);
@@ -128,7 +127,7 @@ class ProfilePostTest extends TestCase
         $this->actingAsUser();
 
         $post = Post::factory()->create([
-            'type' => PostType::PROFILE,
+            'type' => 'profile',
             'title' => 'Old Name',
             'content' => 'Old bio',
             'meta_data' => ['sns' => [['platform' => SnsType::GitHub->value, 'url' => 'https://github.com/old']]],
@@ -136,9 +135,9 @@ class ProfilePostTest extends TestCase
 
         Livewire::test(PostForm::class, ['post' => $post])
             ->assertSet('title', 'Old Name')
-            ->assertSet('sns.0.platform', SnsType::GitHub->value)
+            ->assertSet('typeData.sns.0.platform', SnsType::GitHub->value)
             ->set('title', 'New Name')
-            ->set('sns.0.url', 'https://github.com/new')
+            ->set('typeData.sns.0.url', 'https://github.com/new')
             ->call('save');
 
         $post->refresh();
@@ -149,7 +148,7 @@ class ProfilePostTest extends TestCase
     public function test_profile_card_renders_in_feed(): void
     {
         $post = Post::factory()->create([
-            'type' => PostType::PROFILE,
+            'type' => 'profile',
             'title' => 'Jane Doe',
             'content' => 'Developer',
             'posted_at' => now(),

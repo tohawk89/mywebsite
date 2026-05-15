@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\PostType;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
@@ -22,7 +21,7 @@ class DatabaseSeeder extends Seeder
 
         // About Page
         Post::create([
-            'type' => PostType::PAGE,
+            'type' => 'page',
             'title' => 'About Me',
             'content' => 'Hello! I am NS, a passionate developer and creator. Welcome to my digital garden.',
             'is_pinned' => false,
@@ -31,7 +30,7 @@ class DatabaseSeeder extends Seeder
 
         // Contact Page
         Post::create([
-            'type' => PostType::PAGE,
+            'type' => 'page',
             'title' => 'Contact',
             'content' => 'Reach out to me at hello@example.com or follow me on social media.',
             'is_pinned' => false,
@@ -40,7 +39,7 @@ class DatabaseSeeder extends Seeder
 
         // Profile Card (Pinned)
         Post::create([
-            'type' => PostType::BLOG,
+            'type' => 'blog',
             'title' => 'Welcome to my World',
             'content' => 'This is the start of something new. Creating a masonry layout blog with Laravel Livewire.',
             'is_pinned' => true,
@@ -49,7 +48,7 @@ class DatabaseSeeder extends Seeder
 
         // Spotify Embed (Green Card)
         Post::create([
-            'type' => PostType::SPOTIFY,
+            'type' => 'spotify',
             'title' => 'Coding Vibes',
             'meta_data' => ['url' => 'https://open.spotify.com/album/1DFixLWuPkv3KT3TnV35m3'],
             'is_pinned' => true,
@@ -58,7 +57,7 @@ class DatabaseSeeder extends Seeder
 
         // YouTube Embed (Red Card)
         Post::create([
-            'type' => PostType::YOUTUBE,
+            'type' => 'youtube',
             'title' => 'Inspiration',
             'meta_data' => ['video_id' => 'jfKfPfyJRdk'],
             'is_pinned' => true,
@@ -67,7 +66,7 @@ class DatabaseSeeder extends Seeder
 
         // Create a Profile Post
         $profilePost = Post::create([
-            'type' => PostType::PROFILE,
+            'type' => 'profile',
             'title' => 'Nazar',
             'content' => 'Full Stack Developer | Laravel Enthusiast | Open Source Contributor',
             'meta_data' => [
@@ -87,7 +86,7 @@ class DatabaseSeeder extends Seeder
 
         // Create an Image Post
         $imagePost = Post::create([
-            'type' => PostType::IMAGE,
+            'type' => 'image',
             'title' => 'Design Inspiration', // Title might not be shown, but good for DB
             'content' => 'Beautiful minimal setup.',
             'posted_at' => now(),
@@ -101,7 +100,7 @@ class DatabaseSeeder extends Seeder
 
         // Create a YouTube Post
         $youtubePost = Post::create([
-            'type' => PostType::YOUTUBE,
+            'type' => 'youtube',
             'title' => 'Laravel 11 Features',
             'content' => 'Checking out the new features in Laravel 11.',
             'meta_data' => [
@@ -113,7 +112,7 @@ class DatabaseSeeder extends Seeder
 
         // Quote (Yellow Card)
         Post::create([
-            'type' => PostType::QUOTE,
+            'type' => 'quote',
             'content' => 'Simplicity is the ultimate sophistication.',
             'meta_data' => ['author' => 'Leonardo da Vinci'],
             'sort_order' => 4,
@@ -122,7 +121,7 @@ class DatabaseSeeder extends Seeder
         // Random Blog Posts with Images
         for ($i = 0; $i < 12; $i++) {
             $post = Post::create([
-                'type' => PostType::BLOG,
+                'type' => 'blog',
                 'title' => 'Blog Post '.$i,
                 'content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                 'posted_at' => now()->subDays(rand(1, 30)),

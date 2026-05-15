@@ -19,7 +19,7 @@
                     <p class="text-muted small">Please log in to your account.</p>
                 </div>
 
-                <x-auth-session-status class="mb-4 text-success small text-center" :status="session('status')" />
+                <x-auth.session-status class="mb-4 text-success small text-center" :status="session('status')" />
 
                 <form method="POST" action="{{ route('login.store') }}">
                     @csrf

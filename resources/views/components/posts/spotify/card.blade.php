@@ -20,7 +20,7 @@ new class extends Component {
         @endif
 
         <div class="card-body">
-            <x-post-tags :tags="$post->tags" />
+            <x-ui.post-tags :tags="$post->tags" />
             <h5 class="card-title fw-bold font-sans mb-0">{{ $post->title }}</h5>
         </div>
     </div>

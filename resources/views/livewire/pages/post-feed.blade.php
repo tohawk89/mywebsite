@@ -34,10 +34,10 @@ new #[Layout('layouts::app')] class extends Component {
 ?>
 
 <div class="container text-center py-4">
-    <div class="row g-2" id="masonry-grid" data-masonry='{"percentPosition": true }' wire:ignore.self>
+    <div class="row g-2" id="masonry-grid" wire:ignore.self>
         @foreach($this->posts as $post)
             <livewire:dynamic-component
-                :is="'posts.' . $post->type"
+                :is="'posts.' . $post->type . '.card'"
                 :post="$post"
                 :key="'post-' . $post->id"
             />

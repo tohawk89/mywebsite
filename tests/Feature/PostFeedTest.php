@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Enums\PostType;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -40,7 +39,7 @@ class PostFeedTest extends TestCase
 
     public function test_page_type_posts_are_excluded_from_feed(): void
     {
-        Post::factory()->create(['title' => 'About Page', 'type' => PostType::PAGE, 'posted_at' => now()]);
+        Post::factory()->create(['title' => 'About Page', 'type' => 'page', 'posted_at' => now()]);
 
         $this->get('/')->assertDontSee('About Page');
     }

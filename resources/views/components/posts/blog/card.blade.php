@@ -15,13 +15,18 @@ new class extends Component {
         @endif
 
         <div class="card-body d-flex flex-column">
-            <x-post-tags :tags="$post->tags" />
+            <x-ui.post-tags :tags="$post->tags" />
 
             <h5 class="card-title fw-bold font-sans">{{ $post->title }}</h5>
 
-            @if($post->content)
-                <p class="card-text text-muted flex-grow-1 font-serif line-clamp-3">{{ Str::limit($post->content, 150) }}</p>
-            @endif
+            <p class="card-text text-muted flex-grow-1 font-serif line-clamp-3">{{ Str::limit($post->content, 150) }}</p>
+
+            <div class="mt-3">
+                <button class="btn btn-outline-dark btn-sm rounded-0 fw-medium w-100"
+                    @click="$dispatch('open-modal', { id: {{ $post->id }} })">
+                    Read More
+                </button>
+            </div>
         </div>
     </div>
 </div>

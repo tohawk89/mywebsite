@@ -7,8 +7,8 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-12 col-lg-8 mb-2"
-    style="min-height: 300px; cursor: pointer;"
+<div class="col-12 col-md-12 col-lg-4 mb-2"
+    style="height: 300px; cursor: pointer;"
     @click="$dispatch('open-modal', { id: {{ $post->id }} })">
     <div class="card border-0 shadow-sm rounded-0 overflow-hidden h-100 position-relative">
         @if($post->hasMedia('cover'))

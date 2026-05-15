@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Enums\PostType;
 use App\Livewire\Admin\PostForm;
 use App\Models\Post;
 use App\Models\User;
@@ -33,10 +32,9 @@ class RepositoryPostTest extends TestCase
         ], $overrides);
     }
 
-    public function test_repository_post_type_exists_in_enum(): void
+    public function test_repository_handler_returns_correct_label(): void
     {
-        $this->assertSame('repository', PostType::REPOSITORY->value);
-        $this->assertSame('Git Repository', PostType::REPOSITORY->label());
+        $this->assertSame('Git Repository', (new \App\PostTypes\Repository\Handler)->label());
     }
 
     public function test_admin_can_create_repository_post_with_github_api_fetch(): void
@@ -48,15 +46,17 @@ class RepositoryPostTest extends TestCase
         $component = Livewire::actingAs($this->adminUser())
             ->test(PostForm::class)
             ->set('type', 'repository')
-            ->set('repo_url', 'https://github.com/laravel/framework')
-            ->set('repo_title', 'What I used for my website')
-            ->set('repo_note', 'Great framework')
+            ->set('typeData', [
+                'repo_url' => 'https://github.com/laravel/framework',
+                'repo_title' => 'What I used for my website',
+                'repo_note' => 'Great framework',
+            ])
             ->call('save');
 
         $component->assertHasNoErrors();
 
         $post = Post::first();
-        $this->assertSame(PostType::REPOSITORY, $post->type);
+        $this->assertSame('repository', $post->type);
         $this->assertSame('laravel/framework', $post->title);
         $this->assertSame('https://github.com/laravel/framework', $post->meta_data['repo_url']);
         $this->assertSame('laravel/framework', $post->meta_data['repo_name']);
@@ -77,7 +77,7 @@ class RepositoryPostTest extends TestCase
         Livewire::actingAs($this->adminUser())
             ->test(PostForm::class)
             ->set('type', 'repository')
-            ->set('repo_url', 'https://github.com/laravel/framework')
+            ->set('typeData', ['repo_url' => 'https://github.com/laravel/framework'])
             ->call('save')
             ->assertHasNoErrors();
 
@@ -91,9 +91,9 @@ class RepositoryPostTest extends TestCase
         Livewire::actingAs($this->adminUser())
             ->test(PostForm::class)
             ->set('type', 'repository')
-            ->set('repo_url', '')
+            ->set('typeData', ['repo_url' => ''])
             ->call('save')
-            ->assertHasErrors(['repo_url' => 'required']);
+            ->assertHasErrors(['typeData.repo_url' => 'required']);
     }
 
     public function test_repo_url_must_be_a_valid_git_host(): void
@@ -101,9 +101,9 @@ class RepositoryPostTest extends TestCase
         Livewire::actingAs($this->adminUser())
             ->test(PostForm::class)
             ->set('type', 'repository')
-            ->set('repo_url', 'https://example.com/some/repo')
+            ->set('typeData', ['repo_url' => 'https://example.com/some/repo'])
             ->call('save')
-            ->assertHasErrors(['repo_url']);
+            ->assertHasErrors(['typeData.repo_url']);
     }
 
     public function test_repo_title_max_length_is_validated(): void
@@ -111,10 +111,12 @@ class RepositoryPostTest extends TestCase
         Livewire::actingAs($this->adminUser())
             ->test(PostForm::class)
             ->set('type', 'repository')
-            ->set('repo_url', 'https://github.com/laravel/framework')
-            ->set('repo_title', str_repeat('a', 256))
+            ->set('typeData', [
+                'repo_url' => 'https://github.com/laravel/framework',
+                'repo_title' => str_repeat('a', 256),
+            ])
             ->call('save')
-            ->assertHasErrors(['repo_title']);
+            ->assertHasErrors(['typeData.repo_title']);
     }
 
     public function test_repository_card_renders_on_post_feed(): void
@@ -133,7 +135,7 @@ class RepositoryPostTest extends TestCase
         Livewire::actingAs($this->adminUser())
             ->test(PostForm::class)
             ->set('type', 'repository')
-            ->set('repo_url', 'https://github.com/laravel/framework')
+            ->set('typeData', ['repo_url' => 'https://github.com/laravel/framework'])
             ->call('save')
             ->assertHasNoErrors();
 
@@ -154,8 +156,8 @@ class RepositoryPostTest extends TestCase
 
         Livewire::actingAs($this->adminUser())
             ->test(PostForm::class, ['post' => $post])
-            ->assertSet('repo_url', 'https://github.com/laravel/framework')
-            ->assertSet('repo_title', 'My caption')
-            ->assertSet('repo_note', 'My note');
+            ->assertSet('typeData.repo_url', 'https://github.com/laravel/framework')
+            ->assertSet('typeData.repo_title', 'My caption')
+            ->assertSet('typeData.repo_note', 'My note');
     }
 }
