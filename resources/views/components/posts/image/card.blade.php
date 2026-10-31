@@ -20,26 +20,29 @@ new class extends Component {
     x-on:click="{{ $openViewer }}"
     x-on:keydown.enter="{{ $openViewer }}">
     <x-slot:media>
-        @if($images->isNotEmpty())
-            <img src="{{ $images->first()->getUrl() }}" class="d-block w-100 h-auto"
-                alt="{{ $post->title }}" loading="lazy">
-        @else
-            <div class="ratio ratio-4x3 bg-secondary text-white">
-                <div class="d-flex align-items-center justify-content-center">
-                    <i class="bi bi-image fs-1"></i>
+        {{-- The caption sits on the photo, not the card, so the date row below stays clear. --}}
+        <div class="position-relative">
+            @if($images->isNotEmpty())
+                <img src="{{ $images->first()->getUrl() }}" class="d-block w-100 h-auto"
+                    alt="{{ $post->title }}" loading="lazy">
+            @else
+                <div class="ratio ratio-4x3 bg-secondary text-white">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="bi bi-image fs-1"></i>
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
+            @if($post->publicTitle())
+                <div class="feed-item-caption position-absolute bottom-0 start-0 w-100 p-3 text-white">
+                    <small class="fw-bold">{{ $post->publicTitle() }}</small>
+                </div>
+            @endif
+        </div>
     </x-slot:media>
 
     <x-slot:body>
         @if($images->count() > 1)
             <span class="image-post-count"><i class="bi bi-images"></i> {{ $images->count() }}</span>
-        @endif
-        @if($post->publicTitle())
-            <div class="feed-item-caption position-absolute bottom-0 start-0 w-100 p-3 text-white">
-                <small class="fw-bold">{{ $post->publicTitle() }}</small>
-            </div>
         @endif
     </x-slot:body>
 </x-post-card>
