@@ -8,7 +8,6 @@ use App\Models\Tag;
 use App\PostTypes\PostTypeHandler;
 use App\PostTypes\PostTypeRegistry;
 use App\PostTypes\ProvidesDefaultTitle;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
@@ -147,10 +146,10 @@ class PostForm extends Component
                 if (empty($name)) {
                     continue;
                 }
-                $tag = Tag::firstOrCreate(['name' => $name], ['slug' => Str::slug($name)]);
+                $tag = Tag::firstOrCreate(['slug' => Tag::slugFor($name)], ['name' => $name]);
                 $tagIds[] = $tag->id;
             }
-            $this->post->tags()->sync($tagIds);
+            $this->post->tags()->sync(array_unique($tagIds));
         } else {
             $this->post->tags()->detach();
         }

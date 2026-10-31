@@ -25,8 +25,7 @@ new #[Layout('layouts::app')] class extends Component {
     public function posts()
     {
         return Post::where('type', '!=', 'page')
-            ->whereNotNull('posted_at')
-            ->where('is_draft', false)
+            ->published()
             ->pinnedFirst()
             ->paginate($this->perPage);
     }

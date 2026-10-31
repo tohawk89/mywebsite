@@ -6,9 +6,9 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 ### High
 
-- [ ] **Drafts and unpublished posts can be opened in the modal.** `nav-modal` loads `Post::find($id)` without checking `is_draft` or `posted_at`, so anyone can dispatch `open-modal` with a draft's ID from the browser console and read it. Apply the same rules as the feed.
-- [ ] **Saving some tags crashes.** `PostForm` calls `Tag::firstOrCreate(['name' => $name], ['slug' => Str::slug($name)])` and `tags.slug` is unique. Tags like `Laravel` vs `laravel`, or `C#` vs `C`, produce the same slug, and the save fails with a unique-constraint error. Look tags up by slug.
-- [ ] **The feed shows scheduled posts early and orders by the wrong date.** `pages::post-feed` only checks `whereNotNull('posted_at')`, so posts dated in the future appear immediately. `Post::scopePinnedFirst()` sorts by `created_at`, so a backdated `posted_at` has no effect. Filter `posted_at <= now()` and sort by `posted_at`.
+- [x] **Drafts and unpublished posts can be opened in the modal.** `nav-modal` loaded `Post::find($id)` without checking `is_draft` or `posted_at`, so anyone could dispatch `open-modal` with a draft's ID and read it. Fixed: the modal uses `Post::published()`.
+- [x] **Saving some tags crashes.** Tags were looked up by name but `tags.slug` is unique, so `Laravel` vs `laravel` or `C#` vs `C` failed with a unique-constraint error. Fixed: tags are looked up by `Tag::slugFor()`, which is case-insensitive, keeps `#`/`+` distinct and supports non-Latin names.
+- [x] **The feed shows scheduled posts early and orders by the wrong date.** Fixed: the feed uses `Post::published()` (`posted_at <= now()`), and `pinnedFirst()` sorts by `posted_at`.
 
 ### Medium
 
@@ -39,7 +39,7 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 ### Code quality
 
 - [ ] Apply the newer Pint rules across the codebase in one formatting-only commit (`vendor/bin/pint`, about 20 files).
-- [ ] Add feed tests for pinned ordering, scheduled posts and modal visibility (these cover the high-priority bugs above).
+- [x] Add feed tests for pinned ordering, scheduled posts and modal visibility (`tests/Feature/PostVisibilityTest.php`).
 
 ## Done recently
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use App\Enums\PostType;
+use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Post extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\PostFactory> */
+    /** @use HasFactory<PostFactory> */
     use HasFactory, HasUuids, InteractsWithMedia;
 
     protected $fillable = [
@@ -42,7 +43,18 @@ class Post extends Model implements HasMedia
     {
         return $query->orderByDesc('is_pinned')
             ->orderBy('sort_order')
+            ->orderByDesc('posted_at')
             ->orderByDesc('created_at');
+    }
+
+    /**
+     * Posts visitors may see: not a draft and with a publish date that has arrived.
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('is_draft', false)
+            ->whereNotNull('posted_at')
+            ->where('posted_at', '<=', now());
     }
 
     public function registerMediaCollections(): void

@@ -25,10 +25,11 @@ new class extends Component {
         $this->tags = [];
         $this->postedAt = null;
 
+        // Event payloads come from the browser, so only ever expose published posts.
         if ($id) {
-            $post = Post::with('tags')->find($id);
+            $post = Post::published()->with('tags')->find($id);
         } elseif ($component) {
-            $post = Post::whereJsonContains('meta_data->slug', $component)->first();
+            $post = Post::published()->whereJsonContains('meta_data->slug', $component)->first();
         }
 
         if ($post) {
