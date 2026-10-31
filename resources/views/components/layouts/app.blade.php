@@ -33,8 +33,7 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-
+    <x-site-background />
 
     <!-- Main Content -->
     <main class="container py-4">

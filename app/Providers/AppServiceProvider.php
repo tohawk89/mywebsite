@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use App\Support\SiteBackground;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
                 'site.accent_color' => Setting::get('accent_color', '#2c3e50'),
                 'site.font' => Setting::get('font', 'Instrument Sans'),
                 'site.posts_per_page' => (int) Setting::get('posts_per_page', 10),
+                'site.background' => SiteBackground::load(),
             ]);
         } catch (\Exception) {
             // Table not yet migrated — use defaults

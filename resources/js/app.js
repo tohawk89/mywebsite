@@ -1,4 +1,5 @@
 import 'bootstrap';
+import './backgrounds';
 
 // Pinterest-style masonry: each card spans as many 1px grid rows as it is tall.
 // ResizeObserver re-measures when images or embeds load; MutationObserver picks up infinite-scroll cards.

@@ -459,3 +459,32 @@
         border-radius: 0;
     }
 }
+
+// Background settings preview
+.site-bg-preview {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 0.6rem;
+}
+
+.site-bg-preview-card {
+    position: absolute;
+    z-index: 1;
+    width: 40%;
+    max-width: 210px;
+    padding: 0.6rem 0.8rem;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.admin-body .form-range {
+    &::-webkit-slider-thumb {
+        background-color: var(--admin-primary);
+    }
+
+    &::-moz-range-thumb {
+        background-color: var(--admin-primary);
+    }
+}

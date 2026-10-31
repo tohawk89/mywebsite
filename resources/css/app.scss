@@ -69,3 +69,40 @@ $font-family-sans-serif: 'Instrument Sans', sans-serif;
 }
 
 @import "admin";
+
+// Site background layer (components/site-background.blade.php)
+.site-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+
+    &.is-preview {
+        position: absolute;
+        z-index: 0;
+    }
+}
+
+.site-bg-layer,
+.site-bg-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.site-bg-layer.is-animated {
+    animation: site-bg-pan 18s ease-in-out infinite alternate;
+}
+
+@keyframes site-bg-pan {
+    from { background-position: 0% 50%; }
+    to { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-bg-layer.is-animated {
+        animation: none;
+    }
+}

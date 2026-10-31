@@ -52,6 +52,7 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 ## Done recently
 
+- Configurable home page background (color, gradient, image, pattern, animated effects) with live preview in site settings.
 - Admin redesign phase 1 (see Admin above).
 - Pinterest-style masonry feed; YouTube click-to-play thumbnails; Spotify player height by content type.
 - `make:post-type` command, `PostTypeRegistry`, and the `post-type-development` AI skill.

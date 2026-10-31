@@ -3,15 +3,22 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Setting;
+use App\Support\SiteBackground;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
 
 #[Layout('layouts::admin')]
 #[Title('Site settings')]
 class SiteSettings extends Component
 {
+    use WithFileUploads;
+
     // Identity
     public string $site_title = '';
 
@@ -25,6 +32,12 @@ class SiteSettings extends Component
     public string $accent_color = '#2c3e50';
 
     public string $font = 'Instrument Sans';
+
+    /** @var array<string, mixed> Background options, see App\Support\SiteBackground */
+    public array $background = [];
+
+    /** @var TemporaryUploadedFile|null */
+    public $background_image;
 
     // Feed
     public int $posts_per_page = 10;
@@ -48,6 +61,7 @@ class SiteSettings extends Component
         $this->accent_color = Setting::get('accent_color', '#2c3e50');
         $this->font = Setting::get('font', 'Instrument Sans');
         $this->posts_per_page = (int) Setting::get('posts_per_page', 10);
+        $this->background = SiteBackground::load();
     }
 
     public function rules(): array
@@ -60,7 +74,50 @@ class SiteSettings extends Component
             'accent_color' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'font' => ['required', 'string', 'in:'.implode(',', $this->availableFonts)],
             'posts_per_page' => ['required', 'integer', 'min:1', 'max:100'],
+            'background_image' => ['nullable', 'image', 'max:5120'],
+            ...SiteBackground::rules('background'),
         ];
+    }
+
+    public function updatedBackgroundImage(): void
+    {
+        $this->validateOnly('background_image');
+    }
+
+    public function removeBackgroundImage(): void
+    {
+        $this->background_image = null;
+        $this->background['image_path'] = '';
+    }
+
+    /**
+     * Options for the live preview: unsaved values, with invalid colors swapped for defaults
+     * and a newly picked image shown from its temporary upload.
+     *
+     * @return array<string, mixed>
+     */
+    #[Computed]
+    public function previewBackground(): array
+    {
+        $options = array_merge(SiteBackground::defaults(), $this->background);
+
+        foreach ($options as $key => $value) {
+            if (str_ends_with($key, '_color') && ! preg_match('/^#[0-9a-fA-F]{6}$/', (string) $value)) {
+                $options[$key] = SiteBackground::defaults()[$key];
+            }
+        }
+
+        if ($this->background_image && ! $this->getErrorBag()->has('background_image')) {
+            $options['image_url'] = $this->background_image->temporaryUrl();
+        }
+
+        return $options;
+    }
+
+    #[Computed]
+    public function previewBaseColor(): string
+    {
+        return preg_match('/^#[0-9a-fA-F]{6}$/', $this->background_color) ? $this->background_color : '#fdfbf7';
     }
 
     public function save(): void
@@ -74,6 +131,20 @@ class SiteSettings extends Component
         Setting::set('accent_color', $this->accent_color);
         Setting::set('font', $this->font);
         Setting::set('posts_per_page', (string) $this->posts_per_page);
+
+        $savedImage = SiteBackground::load()['image_path'];
+
+        if ($this->background_image) {
+            $this->background['image_path'] = $this->background_image->store('backgrounds', SiteBackground::disk());
+            $this->background_image = null;
+        }
+
+        // Delete the old file when the image was replaced or removed.
+        if ($savedImage && $savedImage !== $this->background['image_path']) {
+            Storage::disk(SiteBackground::disk())->delete($savedImage);
+        }
+
+        SiteBackground::save($this->background);
 
         $this->dispatch('notify', message: 'Settings saved.');
     }
