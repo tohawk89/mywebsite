@@ -4,6 +4,7 @@ namespace App\PostTypes\Instagram;
 
 use App\Models\Post;
 use App\PostTypes\PostTypeHandler;
+use Illuminate\Support\Str;
 
 class Handler implements PostTypeHandler
 {
@@ -41,13 +42,22 @@ class Handler implements PostTypeHandler
         return [];
     }
 
+    /**
+     * The captioned embed shows the post's Instagram caption under the media.
+     * Accepts a post URL or an older plain "/embed" URL.
+     */
+    public static function captionedEmbedUrl(string $url): string
+    {
+        return rtrim(Str::before($url, '/embed'), '/').'/embed/captioned/';
+    }
+
     private function toEmbedUrl(string $url): string
     {
         $path = trim(parse_url($url, PHP_URL_PATH) ?? '', '/');
         $segments = array_values(array_filter(explode('/', $path)));
 
         if (count($segments) >= 2 && in_array($segments[0], ['p', 'reel'], true)) {
-            return "https://www.instagram.com/{$segments[0]}/{$segments[1]}/embed";
+            return self::captionedEmbedUrl("https://www.instagram.com/{$segments[0]}/{$segments[1]}");
         }
 
         return $url;

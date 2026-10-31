@@ -26,3 +26,29 @@ function initFeedGrid() {
 initFeedGrid();
 document.addEventListener('DOMContentLoaded', initFeedGrid);
 document.addEventListener('livewire:navigated', initFeedGrid);
+
+// Instagram embeds report their real height via postMessage ({"type":"MEASURE","details":{"height":N}}).
+// Resize the matching iframe so posts aren't cropped or padded; the feed grid re-measures the card.
+window.addEventListener('message', (event) => {
+    if (event.origin !== 'https://www.instagram.com' || typeof event.data !== 'string') {
+        return;
+    }
+
+    let message;
+    try {
+        message = JSON.parse(event.data);
+    } catch {
+        return;
+    }
+
+    const height = message?.type === 'MEASURE' ? Number(message.details?.height) : 0;
+
+    if (height > 0) {
+        const iframe = [...document.querySelectorAll('iframe[data-instagram-embed]')]
+            .find((frame) => frame.contentWindow === event.source);
+
+        if (iframe) {
+            iframe.style.height = `${Math.ceil(height)}px`;
+        }
+    }
+});

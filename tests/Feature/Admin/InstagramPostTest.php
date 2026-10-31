@@ -36,7 +36,7 @@ class InstagramPostTest extends TestCase
 
         $this->assertNotNull($post);
         $this->assertSame('https://www.instagram.com/p/Cx12345abcD/', $post->meta_data['instagram_url']);
-        $this->assertSame('https://www.instagram.com/p/Cx12345abcD/embed', $post->meta_data['instagram_embed_url']);
+        $this->assertSame('https://www.instagram.com/p/Cx12345abcD/embed/captioned/', $post->meta_data['instagram_embed_url']);
     }
 
     public function test_instagram_url_must_be_valid_instagram_post_or_reel_url(): void
@@ -73,7 +73,7 @@ class InstagramPostTest extends TestCase
         $post->refresh();
 
         $this->assertSame('https://www.instagram.com/reel/NewCode67890/', $post->meta_data['instagram_url']);
-        $this->assertSame('https://www.instagram.com/reel/NewCode67890/embed', $post->meta_data['instagram_embed_url']);
+        $this->assertSame('https://www.instagram.com/reel/NewCode67890/embed/captioned/', $post->meta_data['instagram_embed_url']);
     }
 
     public function test_instagram_post_renders_in_feed(): void
@@ -91,6 +91,54 @@ class InstagramPostTest extends TestCase
         $this->get('/')
             ->assertStatus(200)
             ->assertSee('Instagram in feed')
-            ->assertSee('https://www.instagram.com/p/FeedCode12345/embed');
+            // Stored before captions were supported; the card upgrades it to the captioned embed.
+            ->assertSee('https://www.instagram.com/p/FeedCode12345/embed/captioned/');
+    }
+
+    public function test_instagram_card_auto_resizes_and_hides_empty_caption(): void
+    {
+        Post::factory()->create([
+            'type' => 'instagram',
+            'title' => '',
+            'posted_at' => now(),
+            'meta_data' => [
+                'instagram_url' => 'https://www.instagram.com/p/NoCaption123/',
+                'instagram_embed_url' => 'https://www.instagram.com/p/NoCaption123/embed',
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertSee('data-instagram-embed', false)
+            ->assertDontSee('card-title fw-bold font-sans mb-0">', false);
+    }
+
+    public function test_instagram_title_and_content_are_optional_and_editable(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        Livewire::actingAs($admin)
+            ->test(PostForm::class)
+            ->set('type', 'instagram')
+            ->set('typeData', ['instagram_url' => 'https://www.instagram.com/p/Bare12345/'])
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $post = Post::first();
+        $this->assertSame('', $post->title);
+
+        Livewire::actingAs($admin)
+            ->test(PostForm::class, ['post' => $post])
+            ->assertSee('Title')
+            ->assertSee('Content')
+            ->set('title', 'My trip')
+            ->set('content', 'A day at the mini zoo.')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $post->refresh();
+        $this->assertSame('My trip', $post->title);
+        $this->assertSame('A day at the mini zoo.', $post->content);
+
+        $this->get('/')->assertSeeInOrder(['/embed/captioned/', 'My trip', 'A day at the mini zoo.'], false);
     }
 }
