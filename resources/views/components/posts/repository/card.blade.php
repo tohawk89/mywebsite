@@ -7,8 +7,8 @@ new class extends Component {
 };
 ?>
 
-<div class="feed-item">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start" style="background-color: #E8F5E9;">
+<x-post-card :post="$post" color="#E8F5E9">
+    <x-slot:body>
         <div class="card-body">
             <div class="d-flex align-items-center gap-2 mb-2">
                 @if(!empty($post->meta_data['owner_avatar']))
@@ -56,5 +56,5 @@ new class extends Component {
                 @endif
             @endif
         </div>
-    </div>
-</div>
+    </x-slot:body>
+</x-post-card>

@@ -7,24 +7,15 @@ new class extends Component {
 };
 ?>
 
-<div class="feed-item">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start bg-white">
-        @if($post->hasMedia('cover'))
+{{-- Default body shows tags, title and a content excerpt. See components/post-card.blade.php for options. --}}
+<x-post-card :post="$post" class="bg-white">
+    @if($post->hasMedia('cover'))
+        <x-slot:media>
             <img src="{{ $post->getFirstMediaUrl('cover') }}" class="card-img-top rounded-0" alt="{{ $post->title }}" loading="lazy">
-        @endif
+        </x-slot:media>
+    @endif
 
-        <div class="card-body">
-            <x-ui.post-tags :tags="$post->tags" />
-
-            <h5 class="card-title fw-bold font-sans mb-1">{{ $post->title }}</h5>
-
-            @if(! empty($post->meta_data['subtitle']))
-                <p class="text-muted small mb-2">{{ $post->meta_data['subtitle'] }}</p>
-            @endif
-
-            @if($post->content)
-                <p class="card-text">{{ $post->content }}</p>
-            @endif
-        </div>
-    </div>
-</div>
+    @if(! empty($post->meta_data['subtitle']))
+        <p class="text-muted small mt-2 mb-0">{{ $post->meta_data['subtitle'] }}</p>
+    @endif
+</x-post-card>

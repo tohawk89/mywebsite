@@ -7,8 +7,8 @@ new class extends Component {
 };
 ?>
 
-<div class="feed-item">
-    <div class="card rounded-0 border-0 shadow-sm bg-warning text-dark">
+<x-post-card :post="$post" class="bg-warning text-dark">
+    <x-slot:body>
         @if($post->tags->isNotEmpty())
             <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex flex-wrap gap-1">
                 @foreach($post->tags as $tag)
@@ -25,5 +25,5 @@ new class extends Component {
                 @endif
             </blockquote>
         </div>
-    </div>
-</div>
+    </x-slot:body>
+</x-post-card>

@@ -7,13 +7,14 @@ new class extends Component {
 };
 ?>
 
-<div class="feed-item">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start" style="background-color: #FFCCCB;">
-        @php
-            $videoId = $post->meta_data['video_id']
-                ?? \App\PostTypes\Youtube\Handler::videoId($post->meta_data['youtube_url'] ?? '');
-        @endphp
-        @if($videoId)
+@php
+    $videoId = $post->meta_data['video_id']
+        ?? \App\PostTypes\Youtube\Handler::videoId($post->meta_data['youtube_url'] ?? '');
+@endphp
+
+<x-post-card :post="$post" color="#FFCCCB" :excerpt="false">
+    @if($videoId)
+        <x-slot:media>
             {{-- Show the thumbnail until clicked so the heavy player only loads on demand. --}}
             <div class="ratio ratio-16x9 bg-dark" wire:ignore x-data="{ playing: false }">
                 <template x-if="playing">
@@ -30,11 +31,6 @@ new class extends Component {
                     <i class="bi bi-youtube youtube-facade-icon"></i>
                 </button>
             </div>
-        @endif
-
-        <div class="card-body">
-            <x-ui.post-tags :tags="$post->tags" />
-            <h5 class="card-title fw-bold font-sans mb-0">{{ $post->title }}</h5>
-        </div>
-    </div>
-</div>
+        </x-slot:media>
+    @endif
+</x-post-card>

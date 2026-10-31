@@ -55,10 +55,30 @@ This generates three files from the templates in `stubs/post-type/` and rebuilds
 | File | Purpose |
 |------|---------|
 | `Handler.php` | `App\PostTypes\{Studly}\Handler`: label, validation rules (`typeData.*`), how form data maps to the `meta_data` column, media collections |
-| `card.blade.php` | The feed card (Livewire single-file component). Wrap it in `<div class="feed-item">` and avoid fixed heights, so the masonry grid can size it |
-| `form.blade.php` | The admin form fields. Bind type fields with `wire:model="typeData.field"` |
+| `card.blade.php` | The feed card (Livewire single-file component), built with `<x-post-card>` |
+| `form.blade.php` | The admin form fields, built with `<x-form.*>` components |
 
 If you create or rename a `Handler.php` by hand, run `composer dump-autoload`: handlers are loaded through Composer's classmap.
+
+### Shared form and card components
+
+Forms and cards are assembled from shared components, so changing a component restyles every post type.
+
+```blade
+{{-- form.blade.php --}}
+<x-form.input name="typeData.instagram_url" type="url" label="Instagram Post URL" placeholder="https://..." />
+<x-form.input name="title" label="Title" optional />
+<x-form.textarea name="content" label="Content" rows="4" optional />
+<x-form.select name="typeData.kind" label="Kind" :options="['a' => 'A']" />
+
+{{-- card.blade.php --}}
+<x-post-card :post="$post" color="#FFE4D6" inset-media>
+    <x-slot:media><iframe ...></iframe></x-slot:media>
+</x-post-card>
+```
+
+- **Form fields** (`resources/views/components/form/`): `name` sets the `wire:model` binding and error message. Options: `label`, `optional`, `hint`, `live`, `wrapper`, plus `type`/`size` (input) and `rows` (textarea). Other attributes go to the control. Use `<x-form.field>` to wrap custom layouts.
+- **Cards** (`post-card`, `post-card-body`): the default body shows tags, title and a three-line excerpt. Use the `media` slot above it (`inset-media` pads embeds), the default slot to append content, or the `body` slot for a fully custom layout. `:title="false"` and `:excerpt="false"` hide parts. Avoid fixed heights so the masonry grid can size the card.
 
 Current types: blog, image, instagram, page, profile, project, quote, repository, spotify, youtube.
 

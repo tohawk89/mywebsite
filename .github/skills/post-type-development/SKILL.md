@@ -44,19 +44,47 @@ php artisan make:post-type {name} --label="Human Label" --media=cover
 
 ## Card rules (feed)
 
-- Root element must be `<div class="feed-item">`. The feed is a Pinterest-style grid: every card is the same width and the layout script measures each card's natural height.
-- Never use fixed heights, `h-100` or Bootstrap column classes (`col-*`) on the card.
-- Match the existing look: Bootstrap 5 + Bootstrap Icons, `card border-0 shadow-sm rounded-0 overflow-hidden text-start`, an optional pastel `background-color`, `<x-ui.post-tags :tags="$post->tags" />` in the body.
-- Images: `loading="lazy"`, natural height (`w-100 h-auto` / `card-img-top`). Get URLs with `$post->getFirstMediaUrl('cover')`.
-- Third-party embeds: wrap in `wire:ignore`; use a click-to-load thumbnail for heavy players (see `youtube`); give iframes a fixed known height or a `.ratio` box so layout does not jump.
+Build every card with `<x-post-card>` (`resources/views/components/post-card.blade.php`); never hand-write the `feed-item` / `.card` wrapper.
+
+```blade
+<x-post-card :post="$post" color="#FFE4D6" inset-media>
+    <x-slot:media>
+        <iframe wire:ignore src="..." width="100%" height="352" loading="lazy"></iframe>
+    </x-slot:media>
+</x-post-card>
+```
+
+- Default body (`<x-post-card-body>`): tags, title, three-line content excerpt; omitted entirely when all are empty.
+- `media` slot: above the body, flush. Add `inset-media` for padded embeds (players, iframes).
+- Default slot: extra content appended to the default body (e.g. a "Read More" button).
+- `body` slot: replaces the default body for fully custom layouts (see `quote`, `profile`, `repository`, `image`).
+- `:title="false"` / `:excerpt="false"` hide parts of the default body; `color` sets the pastel background; other attributes (`class`, `@click`, `style`) go on the card element.
+- The feed is a Pinterest-style grid that measures each card's natural height: never use fixed heights, `h-100` or `col-*` classes.
+- Images: `loading="lazy"`, natural height (`card-img-top` / `w-100 h-auto`), URLs from `$post->getFirstMediaUrl('cover')`.
+- Heavy embeds: click-to-load thumbnail (see `youtube`); otherwise a fixed known height or `.ratio` box. Instagram iframes with `data-instagram-embed` auto-resize.
 - Open the detail modal with `@click="$dispatch('open-modal', { id: {{ $post->id }} })"`.
 
 ## Form rules (admin)
 
-- Start with `@props(['typeData' => []])`.
-- Bind shared fields with `wire:model="title"` / `wire:model="content"`, type fields with `wire:model="typeData.field"`, and show `@error('typeData.field')`.
-- Inputs use `form-control rounded-0 bg-light border-0`; labels use `form-label fw-bold small text-uppercase`.
+Build forms from the field components in `resources/views/components/form/`; do not hand-write labels, inputs or `@error` blocks.
+
+```blade
+@props(['typeData' => []])
+
+<div>
+    <x-form.input name="typeData.url" type="url" label="URL" placeholder="https://..." />
+    <x-form.input name="title" label="Title" size="lg" optional />
+    <x-form.textarea name="content" label="Content" rows="6" optional />
+    <x-form.select name="typeData.kind" label="Kind" :options="['a' => 'A', 'b' => 'B']" placeholder="Choose..." />
+</div>
+```
+
+- `name` is the PostForm property: shared fields (`title`, `content`) or `typeData.*`. It drives `wire:model`, the label `for` id and the error message.
+- Common props: `label`, `optional` (adds "(optional)"; keep it in sync with the handler rules), `hint`, `live` (`wire:model.live`), `wrapper` (wrapper classes, default `mb-4`; `wrapper=""` inside custom rows). `x-form.input` also takes `type` and `size="lg"`; `x-form.textarea` takes `rows`.
+- Any other attribute (`placeholder`, `maxlength`, `style`...) is passed to the control.
+- For custom layouts (repeaters, rows) wrap with `<x-form.field name="..." label="...">` and use label-less controls inside (see `profile`).
 - Cover/avatar upload inputs appear automatically in the sidebar from `mediaCollections()`; do not add them to the form.
+- To change how every form or card looks, edit the components, not the individual post types.
 
 ## Testing
 

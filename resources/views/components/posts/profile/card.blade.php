@@ -7,8 +7,8 @@ new class extends Component {
 };
 ?>
 
-<div class="feed-item">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start" style="background-color: #E6E6FA;">
+<x-post-card :post="$post" color="#E6E6FA">
+    <x-slot:body>
         <div class="card-body text-center p-4">
             <div class="mb-3">
                 @if($post->hasMedia('avatar'))
@@ -43,5 +43,5 @@ new class extends Component {
                 </div>
             @endif
         </div>
-    </div>
-</div>
+    </x-slot:body>
+</x-post-card>
