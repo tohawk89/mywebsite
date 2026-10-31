@@ -7,8 +7,8 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-6 col-lg-4 mb-2">
-    <div class="card rounded-0 border-0 shadow-sm h-100 bg-warning text-dark">
+<div class="feed-item">
+    <div class="card rounded-0 border-0 shadow-sm bg-warning text-dark">
         @if($post->tags->isNotEmpty())
             <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex flex-wrap gap-1">
                 @foreach($post->tags as $tag)

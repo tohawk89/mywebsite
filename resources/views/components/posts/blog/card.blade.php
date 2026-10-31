@@ -8,8 +8,8 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-6 col-lg-4 mb-2">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start h-100 bg-white">
+<div class="feed-item">
+    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start bg-white">
         @if($post->hasMedia('cover'))
             <img src="{{ $post->getFirstMediaUrl('cover') }}" class="card-img-top rounded-0" alt="{{ $post->title }}">
         @endif

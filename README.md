@@ -152,8 +152,8 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-6 col-lg-4 mb-2">
-    <div class="card border-0 shadow-sm rounded-0 h-100">
+<div class="feed-item">
+    <div class="card border-0 shadow-sm rounded-0">
         <div class="card-body">
             <h5 class="card-title">{{ $post->title }}</h5>
             <p class="card-text">{{ $post->meta_data['my_field'] ?? '' }}</p>
@@ -162,7 +162,7 @@ new class extends Component {
 </div>
 ```
 
-Use Bootstrap column classes (`col-lg-4` for narrow, `col-lg-8` for wide) to control the card's width in the masonry grid.
+Wrap the card in a `feed-item` div. Every card has the same width; the feed lays them out Pinterest-style based on their natural height, so avoid fixed heights and `h-100`.
 
 ### Step 3 — Create the form
 

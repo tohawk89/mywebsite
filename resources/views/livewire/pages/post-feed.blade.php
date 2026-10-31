@@ -34,7 +34,7 @@ new #[Layout('layouts::app')] class extends Component {
 ?>
 
 <div class="container text-center py-4">
-    <div class="row g-2" id="masonry-grid" wire:ignore.self>
+    <div class="feed-grid" id="feed-grid" wire:ignore.self>
         @foreach($this->posts as $post)
             <livewire:dynamic-component
                 :is="'posts.' . $post->type . '.card'"
@@ -59,19 +59,4 @@ new #[Layout('layouts::app')] class extends Component {
         @endif
     </div>
 
-    @script
-    <script>
-        Livewire.hook('morph.updated', ({ el, component }) => {
-            var grid = document.querySelector('#masonry-grid');
-            var msnry = new Masonry(grid, {
-                percentPosition: true
-            });
-
-            // Re-layout after images load to prevent overlap/gaps
-            imagesLoaded(grid).on('progress', function () {
-                msnry.layout();
-            });
-        });
-    </script>
-    @endscript
 </div>

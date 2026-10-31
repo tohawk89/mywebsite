@@ -7,13 +7,17 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-6 col-lg-4 mb-2">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start h-100" style="background-color: #90EE90;">
+<div class="feed-item">
+    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start" style="background-color: #90EE90;">
         @if(isset($post->meta_data['spotify_url']))
-            <div class="p-3 pb-0">
-                <iframe wire:ignore style="border-radius:0px"
+            @php
+                // Tracks and episodes use Spotify's compact player; albums, playlists, artists and shows need the tall one.
+                $compact = preg_match('#/embed/(track|episode)/#', $post->meta_data['spotify_url']);
+            @endphp
+            <div class="p-3 pb-0" wire:ignore>
+                <iframe style="border-radius: 0px;"
                     src="{{ $post->meta_data['spotify_url'] }}"
-                    width="100%" height="152" frameBorder="0" allowfullscreen=""
+                    width="100%" height="{{ $compact ? 152 : 352 }}" frameBorder="0" allowfullscreen=""
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                     loading="lazy" title="{{ $post->title }}"></iframe>
             </div>

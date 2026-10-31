@@ -7,8 +7,8 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-6 col-lg-4 mb-2">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start h-100" style="background-color: #FFE4D6;">
+<div class="feed-item">
+    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start" style="background-color: #FFE4D6;">
         @if(isset($post->meta_data['instagram_embed_url']))
             <div class="p-3 pb-0">
                 <iframe wire:ignore

@@ -7,8 +7,8 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-6 col-lg-4 mb-2">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start h-100" style="background-color: #E8F5E9;">
+<div class="feed-item">
+    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start" style="background-color: #E8F5E9;">
         <div class="card-body">
             <div class="d-flex align-items-center gap-2 mb-2">
                 @if(!empty($post->meta_data['owner_avatar']))

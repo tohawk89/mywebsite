@@ -7,22 +7,25 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-12 col-lg-4 mb-2"
-    style="height: 300px; cursor: pointer;"
+<div class="feed-item" style="cursor: pointer;"
     @click="$dispatch('open-modal', { id: {{ $post->id }} })">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden h-100 position-relative">
+    <div class="card border-0 shadow-sm rounded-0 overflow-hidden position-relative">
         @if($post->hasMedia('cover'))
             <img src="{{ $post->getFirstMediaUrl('cover') }}"
-                class="img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0"
-                alt="{{ $post->title }}">
+                class="d-block w-100 h-auto"
+                alt="{{ $post->title }}" loading="lazy">
         @else
-            <div class="w-100 h-100 position-absolute top-0 start-0 bg-secondary d-flex align-items-center justify-content-center text-white">
-                <i class="bi bi-image fs-1"></i>
+            <div class="ratio ratio-4x3 bg-secondary text-white">
+                <div class="d-flex align-items-center justify-content-center">
+                    <i class="bi bi-image fs-1"></i>
+                </div>
             </div>
         @endif
 
-        <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white">
-            <small class="fw-bold">{{ $post->title }}</small>
-        </div>
+        @if($post->title)
+            <div class="feed-item-caption position-absolute bottom-0 start-0 w-100 p-3 text-white">
+                <small class="fw-bold">{{ $post->title }}</small>
+            </div>
+        @endif
     </div>
 </div>

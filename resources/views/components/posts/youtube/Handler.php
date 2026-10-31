@@ -4,6 +4,7 @@ namespace App\PostTypes\Youtube;
 
 use App\Models\Post;
 use App\PostTypes\PostTypeHandler;
+use Closure;
 
 class Handler implements PostTypeHandler
 {
@@ -15,17 +16,27 @@ class Handler implements PostTypeHandler
     public function rules(): array
     {
         return [
-            'typeData.youtube_url' => ['required', 'url', 'regex:/youtube\.com|youtu\.be/'],
+            'typeData.youtube_url' => [
+                'required',
+                'url',
+                function (string $attribute, mixed $value, Closure $fail) {
+                    if (! self::videoId((string) $value)) {
+                        $fail('Enter a valid YouTube video link.');
+                    }
+                },
+            ],
         ];
     }
 
     public function buildMetaData(array $typeData): array
     {
         $url = $typeData['youtube_url'] ?? '';
+        $videoId = self::videoId($url);
 
         return [
             'youtube_url' => $url,
-            'embed_url' => $this->toEmbedUrl($url),
+            'video_id' => $videoId,
+            'embed_url' => $videoId ? "https://www.youtube.com/embed/{$videoId}" : $url,
         ];
     }
 
@@ -41,17 +52,13 @@ class Handler implements PostTypeHandler
         return [];
     }
 
-    private function toEmbedUrl(string $url): string
+    /**
+     * Extract the 11-character video ID from watch, youtu.be, shorts, live and embed links.
+     */
+    public static function videoId(string $url): ?string
     {
-        $videoId = '';
-        if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $url, $matches)) {
-            $videoId = $matches[1];
-        }
+        $pattern = '~(?:youtube(?:-nocookie)?\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/|live/|v/)|youtu\.be/)([A-Za-z0-9_-]{11})~';
 
-        if ($videoId) {
-            return "https://www.youtube.com/embed/{$videoId}";
-        }
-
-        return $url;
+        return preg_match($pattern, $url, $matches) ? $matches[1] : null;
     }
 }

@@ -7,8 +7,8 @@ new class extends Component {
 };
 ?>
 
-<div class="col-12 col-md-6 col-lg-4 mb-2">
-    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start h-100" style="background-color: #E6E6FA;">
+<div class="feed-item">
+    <div class="card border-0 shadow-sm rounded-0 overflow-hidden text-start" style="background-color: #E6E6FA;">
         <div class="card-body text-center p-4">
             <div class="mb-3">
                 @if($post->hasMedia('avatar'))
