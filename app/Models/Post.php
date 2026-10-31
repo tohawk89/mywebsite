@@ -24,6 +24,7 @@ class Post extends Model implements HasMedia
         'meta_data',
         'is_pinned',
         'is_draft',
+        'hide_title',
         'sort_order',
         'posted_at',
     ];
@@ -33,8 +34,18 @@ class Post extends Model implements HasMedia
         'meta_data' => 'array',
         'is_pinned' => 'boolean',
         'is_draft' => 'boolean',
+        'hide_title' => 'boolean',
         'posted_at' => 'datetime',
     ];
+
+    /**
+     * The title to show on the public site: empty when the admin chose to hide it there.
+     * The admin always sees the real title.
+     */
+    public function publicTitle(): string
+    {
+        return $this->hide_title ? '' : (string) $this->title;
+    }
 
     public function tags()
     {

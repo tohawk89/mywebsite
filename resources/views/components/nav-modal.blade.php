@@ -34,7 +34,7 @@ new class extends Component {
         }
 
         if ($post) {
-            $this->title = $post->title;
+            $this->title = $post->publicTitle();
             $this->content = (string) $post->renderedContent();
             $this->postedAt = $post->posted_at?->format('F d, Y');
 

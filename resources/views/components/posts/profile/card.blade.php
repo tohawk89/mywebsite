@@ -22,7 +22,9 @@ new class extends Component {
                 @endif
             </div>
 
-            <h4 class="card-title fw-bold font-sans mb-1">{{ $post->title }}</h4>
+            @if($post->publicTitle())
+                <h4 class="card-title fw-bold font-sans mb-1">{{ $post->publicTitle() }}</h4>
+            @endif
 
             @if($post->content)
                 <p class="card-text text-muted mb-4 font-serif">{{ $post->content }}</p>

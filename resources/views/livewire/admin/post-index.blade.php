@@ -134,6 +134,11 @@
                                     @if($post->is_pinned)
                                         <span class="admin-badge is-pinned"><i class="bi bi-pin-angle-fill"></i>Pinned</span>
                                     @endif
+                                    @if($post->hide_title)
+                                        <span class="admin-badge is-draft" title="The title is hidden on the site">
+                                            <i class="bi bi-eye-slash"></i>Title hidden
+                                        </span>
+                                    @endif
                                 </div>
                             </td>
                             <td class="small text-nowrap">

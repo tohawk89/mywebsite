@@ -72,9 +72,14 @@
                                 @error('posted_at') <span class="text-danger small">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="form-check form-switch mb-4">
+                            <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" role="switch" wire:model="is_pinned" id="isPinned">
                                 <label class="form-check-label" for="isPinned">Pin to the top of the feed</label>
+                            </div>
+                            <div class="form-check form-switch mb-4">
+                                <input class="form-check-input" type="checkbox" role="switch" wire:model="hide_title" id="hideTitle">
+                                <label class="form-check-label" for="hideTitle">Hide the title on the site</label>
+                                <div class="form-text small">It still shows here in the admin.</div>
                             </div>
 
                             <div class="d-grid gap-2">

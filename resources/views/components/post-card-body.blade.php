@@ -12,7 +12,7 @@
 ])
 
 @php
-    $showTitle = $title && filled($post->title);
+    $showTitle = $title && filled($post->publicTitle());
     $showExcerpt = $excerpt && filled($post->content);
 @endphp
 
@@ -21,7 +21,7 @@
         <x-ui.post-tags :tags="$post->tags" />
 
         @if($showTitle)
-            <h5 class="card-title fw-bold font-sans @unless($showExcerpt || $slot->isNotEmpty()) mb-0 @endunless">{{ $post->title }}</h5>
+            <h5 class="card-title fw-bold font-sans @unless($showExcerpt || $slot->isNotEmpty()) mb-0 @endunless">{{ $post->publicTitle() }}</h5>
         @endif
 
         @if($showExcerpt && $expandable)

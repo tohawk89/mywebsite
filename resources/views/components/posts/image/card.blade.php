@@ -9,7 +9,7 @@ new class extends Component {
 
 @php
     $images = \App\PostTypes\Image\Handler::images($post);
-    $slides = $images->map(fn ($media) => ['href' => $media->getUrl(), 'title' => $post->title])->values();
+    $slides = $images->map(fn ($media) => ['href' => $media->getUrl(), 'title' => $post->publicTitle()])->values();
     // Built here because @js isn't compiled inside component tag attributes.
     $openViewer = 'window.openLightbox('.\Illuminate\Support\Js::from($slides)->toHtml().')';
 @endphp
@@ -36,9 +36,9 @@ new class extends Component {
         @if($images->count() > 1)
             <span class="image-post-count"><i class="bi bi-images"></i> {{ $images->count() }}</span>
         @endif
-        @if($post->title)
+        @if($post->publicTitle())
             <div class="feed-item-caption position-absolute bottom-0 start-0 w-100 p-3 text-white">
-                <small class="fw-bold">{{ $post->title }}</small>
+                <small class="fw-bold">{{ $post->publicTitle() }}</small>
             </div>
         @endif
     </x-slot:body>

@@ -18,7 +18,7 @@ new class extends Component {
         @endif
 
         {{-- The form saves "Author / Source" as the post title. --}}
-        @php($author = $post->title ?: ($post->meta_data['author'] ?? null))
+        @php($author = $post->hide_title ? null : ($post->title ?: ($post->meta_data['author'] ?? null)))
         <figure class="card-body text-center p-4 mb-0">
             <blockquote class="mb-0">
                 <p class="fst-italic mb-0 quote-text">&ldquo;{{ $post->content }}&rdquo;</p>
