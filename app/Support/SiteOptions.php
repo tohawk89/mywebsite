@@ -63,6 +63,11 @@ class SiteOptions
         'analytics_plausible_domain' => '',
         'analytics_exclude_admins' => '1',
         'github_token' => '',
+        // AI writing (API keys are stored encrypted as ai_key_{provider})
+        'ai_provider' => 'none',
+        'ai_model_tier' => 'smartest',
+        'ai_model' => '',
+        'ai_style' => '',
         // Maintenance
         'maintenance_enabled' => '0',
         'maintenance_message' => '',

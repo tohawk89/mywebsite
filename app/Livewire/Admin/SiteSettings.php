@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Setting;
 use App\PostTypes\PostTypeRegistry;
+use App\Support\AiWriting;
 use App\Support\SiteBackground;
 use App\Support\SiteOptions;
 use Illuminate\Support\Facades\Artisan;
@@ -38,6 +39,7 @@ class SiteSettings extends Component
         'feed' => ['Feed', 'How posts load and what shows on the home page.', 'bi-grid-3x3-gap'],
         'seo' => ['SEO and sharing', 'How your site looks in search results and when shared.', 'bi-search'],
         'integrations' => ['Integrations', 'Analytics and connected services.', 'bi-plug'],
+        'ai' => ['AI writing', 'Grammar fixes, rewrites and tag suggestions in the post editor.', 'bi-stars'],
         'maintenance' => ['Maintenance', 'Coming soon mode and cache.', 'bi-tools'],
     ];
 
@@ -115,6 +117,24 @@ class SiteSettings extends Component
 
     public bool $has_github_token = false;
 
+    // AI writing
+    public string $ai_provider = 'none';
+
+    public string $ai_model_tier = 'smartest';
+
+    public string $ai_model = '';
+
+    public string $ai_style = '';
+
+    /** A new API key for the selected provider; blank keeps the saved one. Never filled with a saved key. */
+    public string $ai_key_input = '';
+
+    /** @var array<string, bool> Provider => whether a key is saved. */
+    public array $ai_keys_saved = [];
+
+    /** @var array{ok: bool, message: string}|null */
+    public ?array $ai_test_result = null;
+
     // Maintenance
     public bool $maintenance_enabled = false;
 
@@ -132,7 +152,7 @@ class SiteSettings extends Component
             'site_title', 'site_description', 'footer_text', 'site_icon', 'background_color', 'accent_color',
             'font', 'heading_font', 'card_corners', 'max_columns', 'feed_loading', 'seo_share_image',
             'seo_twitter_handle', 'seo_google_verification', 'analytics_provider', 'analytics_ga_id',
-            'analytics_plausible_domain', 'maintenance_message',
+            'analytics_plausible_domain', 'maintenance_message', 'ai_provider', 'ai_model_tier', 'ai_model', 'ai_style',
         ] as $key) {
             $this->{$key} = SiteOptions::get($key);
         }
@@ -145,6 +165,7 @@ class SiteSettings extends Component
         $this->hidden_types = SiteOptions::hiddenTypes();
         $this->has_github_token = SiteOptions::get('github_token') !== '';
         $this->background = SiteBackground::load();
+        $this->refreshAiKeys();
     }
 
     public function rules(): array
@@ -178,6 +199,11 @@ class SiteSettings extends Component
             'analytics_plausible_domain' => ['nullable', 'required_if:analytics_provider,plausible', 'regex:/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/i'],
             'analytics_exclude_admins' => ['boolean'],
             'github_token_input' => ['nullable', 'string', 'max:255'],
+            'ai_provider' => ['required', Rule::in(['none', ...array_keys(AiWriting::PROVIDERS)])],
+            'ai_model_tier' => ['required', Rule::in(array_keys(AiWriting::MODEL_TIERS))],
+            'ai_model' => ['nullable', 'regex:/^[A-Za-z0-9._:\/-]{1,100}$/'],
+            'ai_style' => ['nullable', 'string', 'max:300'],
+            'ai_key_input' => ['nullable', 'string', 'max:500'],
             'maintenance_enabled' => ['boolean'],
             'maintenance_message' => ['nullable', 'string', 'max:500'],
         ];
@@ -241,6 +267,56 @@ class SiteSettings extends Component
         $this->has_github_token = false;
         $this->github_token_input = '';
         $this->dispatch('notify', message: 'GitHub token removed.');
+    }
+
+    public function updatedAiProvider(): void
+    {
+        $this->ai_key_input = '';
+        $this->ai_test_result = null;
+    }
+
+    public function removeAiKey(): void
+    {
+        if (array_key_exists($this->ai_provider, AiWriting::PROVIDERS)) {
+            Setting::set("ai_key_{$this->ai_provider}", '');
+            $this->refreshAiKeys();
+            $this->dispatch('notify', message: 'API key removed.');
+        }
+    }
+
+    /**
+     * Check the key and model with a tiny request, using the unsaved values on the page.
+     */
+    public function testAi(): void
+    {
+        $this->validateOnly('ai_provider');
+        $this->validateOnly('ai_model');
+
+        if (! array_key_exists($this->ai_provider, AiWriting::PROVIDERS)) {
+            $this->ai_test_result = ['ok' => false, 'message' => 'Choose a provider first.'];
+
+            return;
+        }
+
+        try {
+            $model = AiWriting::testConnection(
+                $this->ai_provider,
+                filled($this->ai_key_input) ? trim($this->ai_key_input) : null,
+                $this->ai_model_tier,
+                trim($this->ai_model),
+            );
+            $this->ai_test_result = ['ok' => true, 'message' => "Connected. Requests will use {$model}."];
+        } catch (\Throwable $exception) {
+            report($exception);
+            $this->ai_test_result = ['ok' => false, 'message' => AiWriting::errorMessage($exception)];
+        }
+    }
+
+    private function refreshAiKeys(): void
+    {
+        $this->ai_keys_saved = collect(AiWriting::PROVIDERS)
+            ->map(fn ($label, string $provider) => SiteOptions::get("ai_key_{$provider}") !== '')
+            ->all();
     }
 
     public function clearCache(): void
@@ -311,9 +387,17 @@ class SiteSettings extends Component
         foreach ([
             'site_title', 'site_description', 'footer_text', 'background_color', 'accent_color', 'font',
             'heading_font', 'card_corners', 'max_columns', 'feed_loading', 'seo_google_verification',
-            'analytics_provider', 'analytics_ga_id', 'maintenance_message',
+            'analytics_provider', 'analytics_ga_id', 'maintenance_message', 'ai_provider', 'ai_model_tier', 'ai_style',
         ] as $key) {
             Setting::set($key, (string) $this->{$key});
+        }
+
+        Setting::set('ai_model', trim($this->ai_model));
+
+        if (filled($this->ai_key_input) && array_key_exists($this->ai_provider, AiWriting::PROVIDERS)) {
+            Setting::set("ai_key_{$this->ai_provider}", Crypt::encryptString(trim($this->ai_key_input)));
+            $this->ai_key_input = '';
+            $this->refreshAiKeys();
         }
 
         foreach (['card_shadow', 'show_dates', 'seo_noindex', 'analytics_exclude_admins', 'maintenance_enabled'] as $key) {

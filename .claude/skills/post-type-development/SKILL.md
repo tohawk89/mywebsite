@@ -84,6 +84,9 @@ Build forms from the field components in `resources/views/components/form/`; do 
 - Common props: `label`, `optional` (adds "(optional)"; keep it in sync with the handler rules), `hint`, `live` (`wire:model.live`), `wrapper` (wrapper classes, default `mb-4`; `wrapper=""` inside custom rows). `x-form.input` also takes `type` and `size="lg"`; `x-form.textarea` takes `rows`.
 - Any other attribute (`placeholder`, `maxlength`, `style`...) is passed to the control.
 - For custom layouts (repeaters, rows) wrap with `<x-form.field name="..." label="...">` and use label-less controls inside (see `profile`).
+- Long formatted content: `<x-form.markdown name="content" label="Content" rows="12" />` (EasyMDE editor; content is stored as Markdown). Render it with `$post->renderedContent()` (sanitised HTML) and preview it with `$post->excerpt()` (plain text). See `blog` and `page`.
+- Other controls: `<x-form.color>`, `<x-form.range>`, and `<x-form.tags>` (chips with existing-tag suggestions; the post form already has one in the sidebar).
+- AI writing: fields named `title` or `content` get an AI menu automatically when AI writing is set up (Site settings > AI writing); pass `:ai="false"` to hide it. Other fields can't use it, since `PostForm::aiRewrite()` only accepts `PostForm::AI_FIELDS`.
 - Cover/avatar upload inputs appear automatically in the sidebar from `mediaCollections()`; do not add them to the form.
 - To change how every form or card looks, edit the components, not the individual post types.
 

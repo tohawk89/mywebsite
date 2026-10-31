@@ -46,6 +46,12 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 - [ ] Filter the feed by tag (clickable tag badges).
 - [ ] Self-host Bootstrap Icons and fonts through Vite instead of jsDelivr and Bunny CDNs.
 
+### AI writing (later)
+
+- [ ] AI on type-specific fields (link captions, repository notes).
+- [ ] Suggest the site description and share text with AI.
+- [ ] Image descriptions (alt text) for image posts with a vision model.
+
 ### Code quality
 
 - [ ] Apply the newer Pint rules across the codebase in one formatting-only commit (`vendor/bin/pint`, about 20 files).
@@ -53,6 +59,7 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 ## Done recently
 
+- AI writing (Laravel AI SDK: Claude, Gemini or GPT) for titles and content with review before applying, AI tag suggestions; tag picker and Tags page; Markdown editor for blog and page; content for YouTube and Spotify posts.
 - Admin phase 3: settings pages, SEO and sharing tags, analytics, GitHub token, coming soon mode; settings now load with one query per request.
 - Admin phase 2: dashboard; site icon (favicon) upload in site settings.
 - Website link post type: reads the shared page's title, description, image and icon (blocks private network addresses).

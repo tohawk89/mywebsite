@@ -34,7 +34,7 @@
                     x-text="expanded ? 'Show less' : 'Read more'">Read more</button>
             </div>
         @elseif($showExcerpt)
-            <p class="card-text text-muted font-serif line-clamp-3 @if($slot->isEmpty()) mb-0 @endif">{{ \Illuminate\Support\Str::limit($post->content, 300) }}</p>
+            <p class="card-text text-muted font-serif line-clamp-3 @if($slot->isEmpty()) mb-0 @endif">{{ $post->excerpt() }}</p>
         @endif
 
         {{ $slot }}

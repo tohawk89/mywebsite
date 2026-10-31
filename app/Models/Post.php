@@ -7,6 +7,8 @@ use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -64,6 +66,29 @@ class Post extends Model implements HasMedia
 
         $this->addMediaCollection('avatar')
             ->singleFile();
+    }
+
+    /**
+     * The content as HTML. Content is Markdown; raw HTML is stripped and unsafe links are dropped,
+     * and single line breaks are kept so plain-text posts read as written.
+     */
+    public function renderedContent(): HtmlString
+    {
+        return new HtmlString(Str::markdown((string) $this->content, [
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
+            'renderer' => ['soft_break' => "<br>\n"],
+        ]));
+    }
+
+    /**
+     * The content as one line of plain text (Markdown formatting removed), for previews.
+     */
+    public function excerpt(int $limit = 300): string
+    {
+        $text = html_entity_decode(strip_tags((string) $this->renderedContent()), ENT_QUOTES | ENT_HTML5);
+
+        return Str::limit(trim((string) preg_replace('/\s+/u', ' ', $text)), $limit);
     }
 
     public function getRouteKeyName()

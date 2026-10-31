@@ -98,9 +98,9 @@ class PostTypeComponentsTest extends TestCase
             $response->assertSee("Title for {$type}");
         }
 
-        // Default body shows the excerpt; spotify and youtube opt out of it.
+        // Every type with a default body shows its content, including spotify and youtube captions.
         $response->assertSee('Content for blog')->assertSee('Content for instagram')
-            ->assertDontSee('Content for spotify')->assertDontSee('Content for youtube');
+            ->assertSee('Content for spotify')->assertSee('Content for youtube');
     }
 
     public function test_card_body_is_omitted_when_empty(): void

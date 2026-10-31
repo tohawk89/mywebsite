@@ -223,3 +223,32 @@ footer a {
         font-weight: 600;
     }
 }
+
+// Rendered Markdown in the post dialog
+.post-content {
+    h1, h2, h3, h4 {
+        margin: 1.25rem 0 0.5rem;
+        color: var(--bs-body-color);
+    }
+
+    blockquote {
+        margin: 1rem 0;
+        padding-left: 1rem;
+        border-left: 3px solid var(--site-accent);
+    }
+
+    pre {
+        padding: 0.75rem;
+        background: rgba(0, 0, 0, 0.05);
+        font-size: 0.85em;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    a {
+        color: var(--site-accent);
+    }
+}

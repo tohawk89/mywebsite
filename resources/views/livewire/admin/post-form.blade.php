@@ -94,7 +94,24 @@
                             <h2>Details</h2>
                         </div>
                         <div class="admin-card-body">
-                            <x-form.input name="tags" label="Tags" placeholder="tech, life, music" hint="Separate tags with commas." />
+                            <x-form.tags name="tags" :suggestions="$this->allTagNames"
+                                hint="Pick an existing tag or type a new one, then press Enter.">
+                                @if(\App\Support\AiWriting::enabled())
+                                    <div class="d-flex flex-wrap align-items-center gap-1 mt-2">
+                                        <button type="button" class="btn btn-light btn-sm ai-menu-toggle mb-0" wire:click="suggestTags"
+                                            wire:loading.attr="disabled" wire:target="suggestTags">
+                                            <span wire:loading.remove wire:target="suggestTags"><i class="bi bi-stars"></i> Suggest tags</span>
+                                            <span wire:loading wire:target="suggestTags"><span class="spinner-border spinner-border-sm"></span> Thinking…</span>
+                                        </button>
+                                        @foreach($aiTags as $suggestedTag)
+                                            <button type="button" class="btn btn-sm tag-suggestion" wire:click="addSuggestedTag(@js($suggestedTag))"
+                                                wire:key="ai-tag-{{ $loop->index }}">
+                                                <i class="bi bi-plus"></i>{{ $suggestedTag }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </x-form.tags>
 
                             @if(in_array('cover', $handler->mediaCollections()))
                                 <div class="mb-4">
@@ -133,4 +150,69 @@
             </div>
         </div>
     </form>
+
+    @if($aiError)
+        <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+            <div class="toast show align-items-center border-0 shadow" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body"><i class="bi bi-exclamation-circle-fill text-danger me-2"></i>{{ $aiError }}</div>
+                    <button type="button" class="btn-close me-2 m-auto" aria-label="Close" wire:click="$set('aiError', null)"></button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Review an AI rewrite or pick a title idea before anything changes --}}
+    @if($aiSuggestion || $aiTitles)
+        <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="aiReviewTitle"
+            x-data @keydown.escape.window="$wire.discardAi()">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content border-0 shadow" style="border-radius: 0.75rem;">
+                    <div class="modal-header">
+                        <h2 class="modal-title fs-5 fw-semibold" id="aiReviewTitle">
+                            <i class="bi bi-stars text-primary me-1"></i>
+                            {{ $aiSuggestion ? \App\Ai\Agents\WritingAssistant::ACTIONS[$aiSuggestion['action']][0] : 'Title ideas' }}
+                        </h2>
+                        <button type="button" class="btn-close" aria-label="Discard" wire:click="discardAi"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if($aiSuggestion)
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="small fw-semibold text-muted mb-1">Your text</div>
+                                    <div class="ai-review-text">{{ $aiSuggestion['original'] }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small fw-semibold text-primary mb-1">Suggestion</div>
+                                    <div class="ai-review-text is-suggestion" wire:loading.class="opacity-50" wire:target="retryAi">{{ $aiSuggestion['result'] }}</div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="d-grid gap-2">
+                                @foreach($aiTitles as $index => $idea)
+                                    <button type="button" class="btn btn-light text-start" wire:click="useTitle({{ $index }})">
+                                        {{ $idea }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <span class="small text-muted me-auto">Nothing changes until you accept.</span>
+                        @if($aiSuggestion)
+                            <button type="button" class="btn btn-light" wire:click="discardAi">Discard</button>
+                            <button type="button" class="btn btn-light" wire:click="retryAi" wire:loading.attr="disabled" wire:target="retryAi">
+                                <span wire:loading.remove wire:target="retryAi"><i class="bi bi-arrow-repeat me-1"></i>Try again</span>
+                                <span wire:loading wire:target="retryAi">Thinking…</span>
+                            </button>
+                            <button type="button" class="btn btn-primary" wire:click="acceptAi">Accept</button>
+                        @else
+                            <button type="button" class="btn btn-light" wire:click="discardAi">Close</button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+    @endif
 </div>

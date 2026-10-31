@@ -5,6 +5,7 @@ use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\PostForm;
 use App\Livewire\Admin\PostIndex;
 use App\Livewire\Admin\SiteSettings;
+use App\Livewire\Admin\TagIndex;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
@@ -36,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
         Route::livewire('posts', PostIndex::class)->name('posts.index');
         Route::livewire('posts/create', PostForm::class)->name('posts.create');
         Route::livewire('posts/{post}/edit', PostForm::class)->name('posts.edit');
+        Route::livewire('tags', TagIndex::class)->name('tags.index');
         Route::livewire('settings/{section?}', SiteSettings::class)
             ->whereIn('section', array_keys(SiteSettings::SECTIONS))
             ->name('settings');

@@ -355,6 +355,78 @@
             </div>
         @endif
 
+        @if($section === 'ai')
+            <div class="admin-card mb-4">
+                <div class="admin-card-header">
+                    <h2>Provider</h2>
+                    <p>Text you send to AI goes to this provider and is billed to your API key.</p>
+                </div>
+                <div class="admin-card-body">
+                    <x-form.select name="ai_provider" label="AI provider" live
+                        :options="['none' => 'Off', ...\App\Support\AiWriting::PROVIDERS]" />
+
+                    @if($ai_provider !== 'none')
+                        @php($keySaved = $ai_keys_saved[$ai_provider] ?? false)
+                        <x-form.input name="ai_key_input" type="password" autocomplete="off" wrapper="mb-2"
+                            :label="$keySaved ? 'Replace API key' : 'API key'" :optional="$keySaved"
+                            :placeholder="match ($ai_provider) { 'anthropic' => 'sk-ant-...', 'openai' => 'sk-...', default => 'AIza...' }"
+                            hint="Stored encrypted and never shown again. Leave blank to keep the saved key." />
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+                            @if($keySaved)
+                                <span class="admin-badge is-published"><i class="bi bi-key"></i> Key saved</span>
+                                <button type="button" class="btn btn-light btn-sm text-danger" wire:click="removeAiKey"
+                                    wire:confirm="Remove the saved API key for this provider?">Remove key</button>
+                            @endif
+                            <span class="small text-muted">
+                                Get a key from
+                                @switch($ai_provider)
+                                    @case('anthropic') the Claude Console (console.anthropic.com) @break
+                                    @case('openai') the OpenAI dashboard (platform.openai.com) @break
+                                    @default Google AI Studio (aistudio.google.com)
+                                @endswitch
+                            </span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <x-form.select name="ai_model_tier" label="Model" :options="\App\Support\AiWriting::MODEL_TIERS" wrapper="mb-0" />
+                            </div>
+                            <div class="col-sm-6">
+                                <x-form.input name="ai_model" label="Custom model ID" optional wrapper="mb-0"
+                                    placeholder="Overrides the model above" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
+                            <button type="button" class="btn btn-light" wire:click="testAi" wire:loading.attr="disabled" wire:target="testAi">
+                                <span wire:loading.remove wire:target="testAi"><i class="bi bi-plug me-1"></i> Test connection</span>
+                                <span wire:loading wire:target="testAi">Testing…</span>
+                            </button>
+                            @if($ai_test_result)
+                                <span @class(['small', 'text-success' => $ai_test_result['ok'], 'text-danger' => ! $ai_test_result['ok']])>
+                                    <i @class(['bi', 'bi-check-circle-fill' => $ai_test_result['ok'], 'bi-exclamation-circle-fill' => ! $ai_test_result['ok']])></i>
+                                    {{ $ai_test_result['message'] }}
+                                </span>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            @if($ai_provider !== 'none')
+                <div class="admin-card mb-4">
+                    <div class="admin-card-header">
+                        <h2>Writing style</h2>
+                        <p>Added to every AI request, so suggestions sound like you.</p>
+                    </div>
+                    <div class="admin-card-body">
+                        <x-form.textarea name="ai_style" label="Style notes" optional rows="3" wrapper="mb-0"
+                            placeholder="Casual, first person, short sentences. Keep Malaysian English spelling." />
+                    </div>
+                </div>
+            @endif
+        @endif
+
         @if($section === 'maintenance')
             <div class="admin-card mb-4">
                 <div class="admin-card-header">

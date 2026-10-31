@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Post;
+use App\Models\Tag;
 use App\PostTypes\PostTypeRegistry;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
@@ -36,12 +37,16 @@ class PostIndex extends Component
     #[Url(except: '')]
     public string $status = '';
 
+    /** Tag slug, e.g. from the Tags page. */
+    #[Url(except: '')]
+    public string $tag = '';
+
     /** @var array<int, string> IDs of posts ticked for a bulk action. */
     public array $selected = [];
 
     public function updated(string $property): void
     {
-        if (in_array($property, ['search', 'type', 'status'], true)) {
+        if (in_array($property, ['search', 'type', 'status', 'tag'], true)) {
             $this->resetPage();
             $this->selected = [];
         }
@@ -49,7 +54,7 @@ class PostIndex extends Component
 
     public function clearFilters(): void
     {
-        $this->reset('search', 'type', 'status', 'selected');
+        $this->reset('search', 'type', 'status', 'tag', 'selected');
         $this->resetPage();
     }
 
@@ -184,6 +189,7 @@ class PostIndex extends Component
                     ->orWhere('content', 'like', "%{$this->search}%"));
             })
             ->when($this->type !== '', fn (Builder $query) => $query->where('type', $this->type))
+            ->when($this->tag !== '', fn (Builder $query) => $query->whereHas('tags', fn (Builder $tags) => $tags->where('slug', $this->tag)))
             ->when($this->status === 'published', fn (Builder $query) => $query->published())
             ->when($this->status === 'draft', fn (Builder $query) => $query->where('is_draft', true))
             ->when($this->status === 'scheduled', fn (Builder $query) => $query
@@ -201,7 +207,8 @@ class PostIndex extends Component
 
         return view('livewire.admin.post-index', [
             'posts' => $this->filteredQuery()->with(['media', 'tags'])->pinnedFirst()->paginate(20),
-            'filtering' => $this->search !== '' || $this->type !== '' || $this->status !== '',
+            'filtering' => $this->search !== '' || $this->type !== '' || $this->status !== '' || $this->tag !== '',
+            'tagName' => $this->tag !== '' ? Tag::where('slug', $this->tag)->value('name') : null,
             'firstPinnedId' => $pinnedIds->first(),
             'lastPinnedId' => $pinnedIds->last(),
         ]);

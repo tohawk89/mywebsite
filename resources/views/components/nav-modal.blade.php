@@ -7,6 +7,7 @@ use Livewire\Component;
 new class extends Component {
     public bool $isOpen = false;
 
+    /** Rendered (sanitised) HTML of the post's Markdown content. */
     public ?string $content = null;
 
     public ?string $title = null;
@@ -34,7 +35,7 @@ new class extends Component {
 
         if ($post) {
             $this->title = $post->title;
-            $this->content = $post->content;
+            $this->content = (string) $post->renderedContent();
             $this->postedAt = $post->posted_at?->format('F d, Y');
 
             $this->tags = $post->tags->map(function ($tag) {
@@ -104,7 +105,8 @@ new class extends Component {
                     </div>
 
                     <div class="modal-body px-4 pb-4 pt-2 post-content text-muted fs-5">
-                        {!! nl2br(e($content)) !!}
+                        {{-- Safe: Post::renderedContent() strips raw HTML and unsafe links --}}
+                        {!! $content !!}
                     </div>
                 </div>
             </div>

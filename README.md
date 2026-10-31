@@ -88,10 +88,13 @@ Current types: blog, image, instagram, link (website preview), page, profile, pr
 
 ## Features
 
-- Draft/publish workflow, pinned posts with drag-to-reorder, tags
+- Draft/publish workflow, pinned posts with drag-to-reorder
+- Tags: a tag picker that suggests existing tags, and a Tags page to rename, merge and delete them
+- Markdown editor for blog posts and pages (EasyMDE), rendered safely on the site
+- AI writing help through the [Laravel AI SDK](https://github.com/laravel/ai): fix grammar, improve, shorten, lengthen or change tone of a title or content, suggest titles and suggest tags. Choose Claude, Gemini or GPT and add your own API key (stored encrypted) in Site settings > AI writing; nothing changes until you accept a suggestion
 - Images via Spatie Media Library (local or S3); image posts hold several photos and open fullscreen as a swipeable slider (GLightbox, loaded from jsDelivr on first click)
 - Admin dashboard: post stats, drafts to continue, scheduled posts, posts per month, content mix, quick create and site health checks
-- Site settings in six pages: General (title, description, footer, site icon), Appearance (accent color, fonts, card style, columns, background), Feed (loading, dates, which post types show), SEO and sharing (share image, X handle, search engine options), Integrations (Google Analytics 4 or Plausible, GitHub token stored encrypted) and Maintenance (coming soon mode, clear cache)
+- Site settings in seven pages: General (title, description, footer, site icon), Appearance (accent color, fonts, card style, columns, background), Feed (loading, dates, which post types show), SEO and sharing (share image, X handle, search engine options), Integrations (Google Analytics 4 or Plausible, GitHub token stored encrypted), AI writing (provider, API key, model, style) and Maintenance (coming soon mode, clear cache)
 - Configurable home page background: color, gradient, image, CSS pattern, or animated effect (matrix rain, particles, starfield, waves) with a live preview. Effects live in `resources/js/backgrounds/effects/`, load on demand, pause in hidden tabs and respect reduced motion
 - Social profile links for 12 platforms
 - Fortify authentication with two-factor (TOTP and recovery codes)

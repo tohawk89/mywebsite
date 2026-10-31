@@ -2,5 +2,5 @@
 
 <div>
     <x-form.input name="title" label="Title" size="lg" />
-    <x-form.textarea name="content" label="Content" rows="16" />
+    <x-form.markdown name="content" label="Content" rows="16" />
 </div>

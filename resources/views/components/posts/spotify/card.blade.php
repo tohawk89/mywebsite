@@ -7,7 +7,7 @@ new class extends Component {
 };
 ?>
 
-<x-post-card :post="$post" color="#90EE90" inset-media :excerpt="false">
+<x-post-card :post="$post" color="#90EE90" inset-media expandable>
     @if(isset($post->meta_data['spotify_url']))
         @php
             // Tracks and episodes use Spotify's compact player; albums, playlists, artists and shows need the tall one.

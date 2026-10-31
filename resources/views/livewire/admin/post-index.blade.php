@@ -33,6 +33,13 @@
                 @endforeach
             </div>
 
+            @if($tagName)
+                <span class="tag-chip">
+                    <i class="bi bi-tag"></i> {{ $tagName }}
+                    <button type="button" wire:click="$set('tag', '')" aria-label="Remove tag filter">&times;</button>
+                </span>
+            @endif
+
             @if($filtering)
                 <button type="button" wire:click="clearFilters" class="btn btn-link btn-sm text-decoration-none">
                     Clear filters
@@ -107,7 +114,7 @@
                                             {{ $post->title ?: 'Untitled' }}
                                         </a>
                                         <div class="small text-muted text-truncate" style="max-width: 320px;">
-                                            {{ \Illuminate\Support\Str::limit(strip_tags((string) $post->content), 70) ?: ' ' }}
+                                            {{ $post->excerpt(70) ?: ' ' }}
                                         </div>
                                     </div>
                                 </div>

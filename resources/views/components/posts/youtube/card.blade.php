@@ -12,7 +12,7 @@ new class extends Component {
         ?? \App\PostTypes\Youtube\Handler::videoId($post->meta_data['youtube_url'] ?? '');
 @endphp
 
-<x-post-card :post="$post" color="#FFCCCB" :excerpt="false">
+<x-post-card :post="$post" color="#FFCCCB" expandable>
     @if($videoId)
         <x-slot:media>
             {{-- Show the thumbnail until clicked so the heavy player only loads on demand. --}}
