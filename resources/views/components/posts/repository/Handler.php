@@ -5,7 +5,10 @@ namespace App\PostTypes\Repository;
 use App\Models\Post;
 use App\PostTypes\PostTypeHandler;
 use App\PostTypes\ProvidesDefaultTitle;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class Handler implements PostTypeHandler, ProvidesDefaultTitle
 {
@@ -56,39 +59,129 @@ class Handler implements PostTypeHandler, ProvidesDefaultTitle
 
     private function fetchRepoData(string $url): array
     {
-        $path = trim(parse_url($url, PHP_URL_PATH) ?? '', '/');
-        $segments = array_values(array_filter(explode('/', $path)));
+        $host = strtolower(preg_replace('/^www\./', '', (string) parse_url($url, PHP_URL_HOST)));
+        $path = $this->repoPath($host, $url);
 
-        if (count($segments) < 2) {
+        if (substr_count($path, '/') < 1) {
             return ['repo_name' => $path ?: $url];
         }
 
-        $owner = $segments[0];
-        $repo = $segments[1];
-
-        if (! str_contains($url, 'github.com')) {
-            return ['repo_name' => "{$owner}/{$repo}"];
+        try {
+            $data = match ($host) {
+                'github.com' => $this->fetchGithub($path),
+                'gitlab.com' => $this->fetchGitlab($path),
+                'bitbucket.org' => $this->fetchBitbucket($path),
+                default => null,
+            };
+        } catch (ConnectionException) {
+            $data = null;
         }
 
-        $response = Http::withHeaders([
-            'Accept' => 'application/vnd.github.v3+json',
-            'User-Agent' => config('app.name', 'Laravel'),
-        ])->get("https://api.github.com/repos/{$owner}/{$repo}");
+        return $data ?? ['repo_name' => $path];
+    }
+
+    /**
+     * Normalize the repository path: GitLab allows nested groups (group/subgroup/repo),
+     * GitHub and Bitbucket are always owner/repo. Drops ".git" and file/branch suffixes.
+     */
+    private function repoPath(string $host, string $url): string
+    {
+        $path = trim((string) parse_url($url, PHP_URL_PATH), '/');
+
+        if ($host === 'gitlab.com') {
+            $path = Str::before($path, '/-/');
+        } else {
+            $path = implode('/', array_slice(explode('/', $path), 0, 2));
+        }
+
+        return preg_replace('/\.git$/', '', $path);
+    }
+
+    private function client(): PendingRequest
+    {
+        return Http::timeout(5)->withHeaders(['User-Agent' => config('app.name', 'Laravel')]);
+    }
+
+    private function fetchGithub(string $path): ?array
+    {
+        $response = $this->client()
+            ->withHeaders(['Accept' => 'application/vnd.github.v3+json'])
+            ->get("https://api.github.com/repos/{$path}");
 
         if (! $response->successful()) {
-            return ['repo_name' => "{$owner}/{$repo}"];
+            return null;
         }
 
         $data = $response->json();
 
         return [
-            'repo_name' => $data['full_name'] ?? "{$owner}/{$repo}",
+            'repo_name' => $data['full_name'] ?? $path,
             'repo_description' => $data['description'] ?? null,
             'language' => $data['language'] ?? null,
             'stars' => $data['stargazers_count'] ?? 0,
             'forks' => $data['forks_count'] ?? 0,
             'topics' => $data['topics'] ?? [],
             'owner_avatar' => $data['owner']['avatar_url'] ?? null,
+        ];
+    }
+
+    private function fetchGitlab(string $path): ?array
+    {
+        $api = 'https://gitlab.com/api/v4/projects/'.rawurlencode($path);
+        $response = $this->client()->get($api);
+
+        if (! $response->successful()) {
+            return null;
+        }
+
+        $data = $response->json();
+
+        // Languages come from a separate endpoint as {"Go": 98.4, ...}; keep the largest.
+        $languages = $this->client()->get("{$api}/languages")->json();
+        $language = null;
+        if (is_array($languages) && $languages !== []) {
+            arsort($languages);
+            $language = array_key_first($languages);
+        }
+
+        $avatar = $data['avatar_url'] ?? $data['namespace']['avatar_url'] ?? null;
+        if ($avatar && str_starts_with($avatar, '/')) {
+            $avatar = "https://gitlab.com{$avatar}";
+        }
+
+        return [
+            'repo_name' => $data['path_with_namespace'] ?? $path,
+            'repo_description' => $data['description'] ?? null,
+            'language' => $language,
+            'stars' => $data['star_count'] ?? 0,
+            'forks' => $data['forks_count'] ?? 0,
+            'topics' => $data['topics'] ?? [],
+            'owner_avatar' => $avatar,
+        ];
+    }
+
+    private function fetchBitbucket(string $path): ?array
+    {
+        $api = "https://api.bitbucket.org/2.0/repositories/{$path}";
+        $response = $this->client()->get($api);
+
+        if (! $response->successful()) {
+            return null;
+        }
+
+        $data = $response->json();
+
+        // Bitbucket has no star count; watchers are the closest equivalent. Counts are paginated totals.
+        $count = fn (string $endpoint): int => (int) ($this->client()->get("{$api}/{$endpoint}", ['pagelen' => 1])->json('size') ?? 0);
+
+        return [
+            'repo_name' => $data['full_name'] ?? $path,
+            'repo_description' => ($data['description'] ?? '') ?: null,
+            'language' => ($data['language'] ?? '') !== '' ? Str::ucfirst($data['language']) : null,
+            'stars' => $count('watchers'),
+            'forks' => $count('forks'),
+            'topics' => [],
+            'owner_avatar' => $data['owner']['links']['avatar']['href'] ?? $data['links']['avatar']['href'] ?? null,
         ];
     }
 }
