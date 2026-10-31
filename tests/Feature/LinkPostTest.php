@@ -161,4 +161,21 @@ class LinkPostTest extends TestCase
             ->test(PostForm::class, ['post' => $post])
             ->assertSet('typeData.url', 'https://example.com/x');
     }
+
+    public function test_long_caption_is_shown_in_full_with_a_read_more_toggle(): void
+    {
+        $caption = str_repeat('A long thought about this article. ', 30).'THE-END';
+
+        Post::factory()->create([
+            'type' => 'link',
+            'content' => $caption,
+            'meta_data' => ['url' => 'https://example.com/long'],
+            'posted_at' => now()->subMinute(),
+        ]);
+
+        $this->get('/')->assertOk()
+            ->assertSee('THE-END')
+            ->assertSee('Read more')
+            ->assertSee('card-read-more', false);
+    }
 }

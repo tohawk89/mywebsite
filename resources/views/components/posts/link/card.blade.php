@@ -14,7 +14,7 @@ new class extends Component {
 @endphp
 
 {{-- Your own title and content (optional) sit above a preview of the shared page. --}}
-<x-post-card :post="$post" class="bg-white">
+<x-post-card :post="$post" class="bg-white" expandable>
     @if(! empty($meta['image']))
         <x-slot:media>
             <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">

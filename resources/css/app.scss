@@ -154,3 +154,13 @@ $font-family-sans-serif: 'Instrument Sans', sans-serif;
     font-size: 1rem;
     line-height: 1.6;
 }
+
+// Keep line breaks the author typed
+.text-prewrap {
+    white-space: pre-line;
+}
+
+.card-read-more {
+    color: inherit;
+    font-weight: 600;
+}

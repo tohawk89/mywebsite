@@ -9,6 +9,7 @@
     - default slot: extra content appended to the default body (e.g. a button)
     - body slot: replaces the default body entirely
     - :title="false" / :excerpt="false": hide the title or content in the default body
+    - expandable: show the full content with a "Read more" toggle instead of a fixed excerpt
     - other attributes (class, @click...) go on the card element
 --}}
 @props([
@@ -17,6 +18,7 @@
     'insetMedia' => false,
     'title' => true,
     'excerpt' => true,
+    'expandable' => false,
 ])
 
 <div class="feed-item">
@@ -32,7 +34,7 @@
         @isset($body)
             {{ $body }}
         @else
-            <x-post-card-body :$post :$title :$excerpt :spacer="$insetMedia">{{ $slot }}</x-post-card-body>
+            <x-post-card-body :$post :$title :$excerpt :$expandable :spacer="$insetMedia">{{ $slot }}</x-post-card-body>
         @endisset
     </div>
 </div>
