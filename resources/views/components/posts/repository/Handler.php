@@ -4,9 +4,10 @@ namespace App\PostTypes\Repository;
 
 use App\Models\Post;
 use App\PostTypes\PostTypeHandler;
+use App\PostTypes\ProvidesDefaultTitle;
 use Illuminate\Support\Facades\Http;
 
-class Handler implements PostTypeHandler
+class Handler implements PostTypeHandler, ProvidesDefaultTitle
 {
     public function label(): string
     {
@@ -46,6 +47,11 @@ class Handler implements PostTypeHandler
     public function mediaCollections(): array
     {
         return [];
+    }
+
+    public function defaultTitle(array $metaData, array $typeData): string
+    {
+        return $metaData['repo_name'] ?? $typeData['repo_url'] ?? '';
     }
 
     private function fetchRepoData(string $url): array

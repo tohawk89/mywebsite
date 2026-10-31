@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\PostTypes\DefaultHandler;
 use App\PostTypes\PostTypeHandler;
+use App\PostTypes\ProvidesDefaultTitle;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -112,8 +113,8 @@ class PostForm extends Component
 
         $wasNotPinned = ! ($this->post?->is_pinned ?? false);
 
-        if ($this->type === 'repository' && empty($this->title)) {
-            $this->title = $metaData['repo_name'] ?? $this->typeData['repo_url'] ?? '';
+        if (empty($this->title) && $handler instanceof ProvidesDefaultTitle) {
+            $this->title = $handler->defaultTitle($metaData, $this->typeData);
         }
 
         $data = [
@@ -175,9 +176,14 @@ class PostForm extends Component
 
     private function resolveHandler(): PostTypeHandler
     {
-        $class = 'App\\PostTypes\\'.ucfirst($this->type).'\\Handler';
+        return $this->handlerFor($this->type);
+    }
 
-        return class_exists($class) ? new $class : new DefaultHandler($this->type);
+    private function handlerFor(string $type): PostTypeHandler
+    {
+        $class = 'App\\PostTypes\\'.ucfirst($type).'\\Handler';
+
+        return class_exists($class) ? new $class : new DefaultHandler($type);
     }
 
     #[Computed]
@@ -194,12 +200,7 @@ class PostForm extends Component
     public function typesWithLabels(): array
     {
         return collect($this->availableTypes())
-            ->map(function (string $type) {
-                $class = 'App\\PostTypes\\'.ucfirst($type).'Handler';
-                $handler = class_exists($class) ? new $class : new DefaultHandler($type);
-
-                return ['value' => $type, 'label' => $handler->label()];
-            })
+            ->map(fn (string $type) => ['value' => $type, 'label' => $this->handlerFor($type)->label()])
             ->all();
     }
 

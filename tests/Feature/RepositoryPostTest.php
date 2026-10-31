@@ -37,6 +37,16 @@ class RepositoryPostTest extends TestCase
         $this->assertSame('Git Repository', (new \App\PostTypes\Repository\Handler)->label());
     }
 
+    public function test_type_selector_uses_handler_labels(): void
+    {
+        $typesWithLabels = Livewire::actingAs($this->adminUser())
+            ->test(PostForm::class)
+            ->instance()
+            ->typesWithLabels();
+
+        $this->assertContains(['value' => 'repository', 'label' => 'Git Repository'], $typesWithLabels);
+    }
+
     public function test_admin_can_create_repository_post_with_github_api_fetch(): void
     {
         Http::fake([

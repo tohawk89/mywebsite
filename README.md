@@ -4,7 +4,7 @@ A personal website and CMS built with **Laravel 12**, **Livewire**, **Bootstrap 
 
 ## 📋 Requirements
 
-- **PHP**: ^8.3
+- **PHP**: ^8.2
 - **Node.js** & **NPM**: (Latest LTS recommended)
 - **Composer**
 - **Database**: MySQL (recommended) or SQLite
