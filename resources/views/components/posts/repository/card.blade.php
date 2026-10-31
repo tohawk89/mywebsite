@@ -23,7 +23,7 @@ new class extends Component {
             </div>
 
             @if(!empty($post->meta_data['repo_description']))
-                <p class="text-muted small mb-2 font-serif">{{ $post->meta_data['repo_description'] }}</p>
+                <p class="card-text text-muted mb-2 font-serif">{{ $post->meta_data['repo_description'] }}</p>
             @endif
 
             <div class="d-flex align-items-center gap-3 flex-wrap small text-muted mb-2">
@@ -49,10 +49,10 @@ new class extends Component {
             @if(!empty($post->meta_data['title']) || !empty($post->meta_data['note']))
                 <hr class="my-2">
                 @if(!empty($post->meta_data['title']))
-                    <p class="fw-semibold mb-1 small font-sans">{{ $post->meta_data['title'] }}</p>
+                    <h5 class="card-title fw-bold font-sans mb-1">{{ $post->meta_data['title'] }}</h5>
                 @endif
                 @if(!empty($post->meta_data['note']))
-                    <p class="text-muted small mb-0 font-serif">{{ $post->meta_data['note'] }}</p>
+                    <p class="card-text text-muted mb-0 font-serif">{{ $post->meta_data['note'] }}</p>
                 @endif
             @endif
         </div>
