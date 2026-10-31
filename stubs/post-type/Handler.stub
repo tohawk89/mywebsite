@@ -1,0 +1,41 @@
+<?php
+
+namespace App\PostTypes\{{ class }};
+
+use App\Models\Post;
+use App\PostTypes\PostTypeHandler;
+
+class Handler implements PostTypeHandler
+{
+    public function label(): string
+    {
+        return {{ label }};
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'typeData.subtitle' => ['nullable', 'string', 'max:255'],
+        ];
+    }
+
+    public function buildMetaData(array $typeData): array
+    {
+        return [
+            'subtitle' => ($typeData['subtitle'] ?? '') ?: null,
+        ];
+    }
+
+    public function mountData(Post $post): array
+    {
+        return [
+            'subtitle' => $post->meta_data['subtitle'] ?? '',
+        ];
+    }
+
+    public function mediaCollections(): array
+    {
+        return {{ mediaCollections }};
+    }
+}

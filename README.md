@@ -1,240 +1,92 @@
 # My Website
 
-A personal website and CMS built with **Laravel 13**, **Livewire 4**, **Bootstrap 5.3**, and **Flux UI**. The feed uses a masonry card layout with infinite scroll. The core design goal is a **plugin-style post type system** — adding a new content type requires only dropping three files into one folder.
+A personal website and CMS built with **Laravel 13**, **Livewire 4** and **Bootstrap 5.3**. Posts appear in a Pinterest-style masonry feed with infinite scroll, and an admin panel manages posts and site settings. Content types are plugins: each post type is one folder, generated with a single command.
 
-## 📋 Requirements
+Known bugs and planned work are tracked in [Plan.md](Plan.md).
 
-- **PHP**: ^8.3
-- **Node.js** & **NPM**: (Latest LTS recommended)
-- **Composer**
-- **Database**: MySQL (recommended) or SQLite
+## Requirements
 
-## 🚀 Installation
+- PHP 8.3+
+- Composer
+- Node.js (LTS) and npm
+- SQLite (default) or MySQL
 
-### 1. Clone the Repository
+## Setup
+
 ```bash
 git clone https://github.com/nazar89/mywebsite.git
 cd mywebsite
-```
-
-### 2. Install Dependencies
-```bash
-composer install
-npm install
-```
-
-### 3. Environment Setup
-```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-Open `.env` and configure your database:
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=mywebsite
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### 4. Migrate & Seed
-```bash
-php artisan migrate --seed
+composer setup
 php artisan storage:link
+php artisan user:create "Your Name" "you@example.com" "password"
 ```
 
-### 5. Build Frontend Assets
-```bash
-npm run build
-```
+`composer setup` installs dependencies, creates `.env`, generates the app key, runs migrations and builds assets. Public registration is disabled, so `user:create` is how you get an admin account. Log in at `/login`; the admin panel is at `/admin/dashboard`.
 
-## 🛠 Usage
+Media is stored on the disk named in `MEDIA_DISK` (`local` by default; set it to `s3` with the `AWS_*` variables for S3).
 
-### Running Locally
-The site is served via **Laravel Herd** at `https://mywebsite.test`.
+## Development
 
-For active frontend development, run:
-```bash
-npm run dev
-```
-
-### Creating an Admin User
-Public registration is **disabled**. Create an admin user via the Artisan command:
+The site is served by [Laravel Herd](https://herd.laravel.com) at `https://mywebsite.test`.
 
 ```bash
-php artisan user:create "Your Name" "your@email.com" "password123"
+npm run dev          # Vite with hot reload
+composer test        # run the test suite
+vendor/bin/pint      # format PHP
 ```
 
-Then log in at `/login`.
+## Post types
 
----
-
-## 🧩 Adding a Post Type
-
-Post types live entirely inside `resources/views/components/posts/`. Each type is a folder with three files. The admin panel auto-discovers all types — no config or registration needed.
-
-### Folder structure
-
-```
-resources/views/components/posts/
-└── mytype/
-    ├── Handler.php      ← business logic & validation
-    ├── card.blade.php   ← public feed card (Livewire component)
-    └── form.blade.php   ← admin create/edit form fields
-```
-
-### Step 1 — Create the Handler
-
-`Handler.php` implements `App\PostTypes\PostTypeHandler`. The namespace must follow the pattern `App\PostTypes\{PascalCaseType}`.
-
-```php
-<?php
-
-namespace App\PostTypes\Mytype;
-
-use App\Models\Post;
-use App\PostTypes\PostTypeHandler;
-
-class Handler implements PostTypeHandler
-{
-    public function label(): string
-    {
-        return 'My Type';  // shown in the admin type selector
-    }
-
-    public function rules(): array
-    {
-        // Merged with the base PostForm rules.
-        // Type-specific fields live in typeData.*
-        return [
-            'typeData.my_field' => ['required', 'string'],
-        ];
-    }
-
-    public function buildMetaData(array $typeData): array
-    {
-        // Persist whatever you need into the post's meta_data JSON column.
-        return [
-            'my_field' => $typeData['my_field'] ?? null,
-        ];
-    }
-
-    public function mountData(Post $post): array
-    {
-        // Pre-populate typeData when editing an existing post.
-        return [
-            'my_field' => $post->meta_data['my_field'] ?? '',
-        ];
-    }
-
-    public function mediaCollections(): array
-    {
-        // Return Spatie MediaLibrary collection names this type uses.
-        // Common options: 'cover', 'avatar'. Return [] if none.
-        return ['cover'];
-    }
-}
-```
-
-### Step 2 — Create the card
-
-`card.blade.php` is a Livewire component rendered in the public feed. It receives the `$post` model.
-
-```blade
-<?php
-use App\Models\Post;
-use Livewire\Component;
-
-new class extends Component {
-    public Post $post;
-};
-?>
-
-<div class="feed-item">
-    <div class="card border-0 shadow-sm rounded-0">
-        <div class="card-body">
-            <h5 class="card-title">{{ $post->title }}</h5>
-            <p class="card-text">{{ $post->meta_data['my_field'] ?? '' }}</p>
-        </div>
-    </div>
-</div>
-```
-
-Wrap the card in a `feed-item` div. Every card has the same width; the feed lays them out Pinterest-style based on their natural height, so avoid fixed heights and `h-100`.
-
-### Step 3 — Create the form
-
-`form.blade.php` is rendered inside the admin post form for this type. Bind type-specific fields with `wire:model="typeData.your_field"`.
-
-```blade
-@props(['typeData' => []])
-
-<div>
-    <div class="mb-4">
-        <label class="form-label fw-bold small text-uppercase">My Field</label>
-        <input type="text" wire:model="typeData.my_field"
-            class="form-control rounded-0 bg-light border-0">
-        @error('typeData.my_field')
-            <span class="text-danger small">{{ $message }}</span>
-        @enderror
-    </div>
-</div>
-```
-
-### Step 4 — Regenerate the autoloader
-
-Because `Handler.php` lives inside `resources/` (added to Composer's classmap), you must run:
+Each post type lives in `resources/views/components/posts/{type}/` and is discovered automatically. Create one with:
 
 ```bash
-composer dump-autoload
+php artisan make:post-type podcast --label="Podcast Episode" --media=cover
 ```
 
-That's it. The type now appears in the admin type selector and posts of that type will render with your card on the public feed.
-
----
-
-### Interface reference
-
-| Method | Purpose |
+| Option | Purpose |
 |--------|---------|
-| `label(): string` | Label shown in the admin type dropdown |
-| `rules(): array` | Extra validation rules (keys prefixed `typeData.`) merged into `PostForm` |
-| `buildMetaData(array $typeData): array` | Transforms `typeData` into the `meta_data` JSON saved on the post |
-| `mountData(Post $post): array` | Populates `typeData` when editing an existing post |
-| `mediaCollections(): array` | Spatie MediaLibrary collections the type uses (e.g. `['cover']`) |
+| `name` | kebab-case type name (`podcast`, `book-review`) |
+| `--label` | Label in the admin type selector (defaults to the headline of the name) |
+| `--media` | Upload fields to enable: `cover`, `avatar` (repeatable) |
+| `--force` | Overwrite an existing type |
 
-If no `Handler.php` exists for a type, `App\PostTypes\DefaultHandler` is used as a fallback (no extra fields, label derived from the folder name).
+This generates three files from the templates in `stubs/post-type/` and rebuilds the autoloader:
 
----
+| File | Purpose |
+|------|---------|
+| `Handler.php` | `App\PostTypes\{Studly}\Handler`: label, validation rules (`typeData.*`), how form data maps to the `meta_data` column, media collections |
+| `card.blade.php` | The feed card (Livewire single-file component). Wrap it in `<div class="feed-item">` and avoid fixed heights, so the masonry grid can size it |
+| `form.blade.php` | The admin form fields. Bind type fields with `wire:model="typeData.field"` |
 
-## ✨ Other Features
+If you create or rename a `Handler.php` by hand, run `composer dump-autoload`: handlers are loaded through Composer's classmap.
 
-- **Draft / Publish workflow** — keep posts hidden until ready
-- **Pinned posts** with drag-to-reorder sort order
-- **Tag-based organisation**
-- **Media management** via Spatie MediaLibrary (cover & avatar images, AWS S3 support)
-- **Site settings**: title, description, footer, accent colour, background colour, font, posts per page
-- **6 font choices**: Instrument Sans, Inter, Merriweather, Playfair Display, Roboto Mono, Lora
-- **Social profiles** for 12 platforms configurable from the admin panel
-- **Authentication** via Laravel Fortify with two-factor support (TOTP + recovery codes)
+Current types: blog, image, instagram, page, profile, project, quote, repository, spotify, youtube.
 
-## 📦 Tech Stack
+### AI assistance
+
+[Laravel Boost](https://github.com/laravel/boost) provides guidelines (`CLAUDE.md`, `AGENTS.md`), skills and an MCP server for Claude Code and GitHub Copilot. The project's own `post-type-development` skill teaches agents the conventions above. Its source is `.ai/skills/post-type-development/SKILL.md`; run `php artisan boost:update` after editing it.
+
+## Features
+
+- Draft/publish workflow, pinned posts with drag-to-reorder, tags
+- Images via Spatie Media Library (local or S3)
+- Site settings: title, description, footer, colours, font, posts per page
+- Social profile links for 12 platforms
+- Fortify authentication with two-factor (TOTP and recovery codes)
+
+## Tech stack
 
 | Layer | Technology |
 |-------|-----------|
 | Framework | Laravel 13 |
-| Public Frontend | Bootstrap 5.3 (SCSS) + Bootstrap Icons + masonry-layout |
-| Admin / Settings UI | Livewire 4 + Flux UI 2 |
-| Auth | Laravel Fortify (2FA) |
-| Media | Spatie MediaLibrary 11 + AWS S3 |
-| Frontend Bundler | Vite |
-| Dev Server | Laravel Herd |
+| Public site | Bootstrap 5.3 (SCSS), Bootstrap Icons |
+| Admin and settings | Livewire 4, Flux UI 2 |
+| Auth | Laravel Fortify |
+| Media | Spatie Media Library 11 |
+| Build | Vite |
 | Testing | PHPUnit 12 |
+| AI tooling | Laravel Boost 2 |
 
-## 🤝 Contributing
-Pull requests welcome for bug fixes, improvements, or new post types.
+## License
 
-## 📄 License
 [MIT](https://opensource.org/licenses/MIT)

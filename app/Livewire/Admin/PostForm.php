@@ -5,12 +5,12 @@ namespace App\Livewire\Admin;
 use App\Enums\SnsType;
 use App\Models\Post;
 use App\Models\Tag;
-use App\PostTypes\DefaultHandler;
 use App\PostTypes\PostTypeHandler;
+use App\PostTypes\PostTypeRegistry;
 use App\PostTypes\ProvidesDefaultTitle;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -181,19 +181,13 @@ class PostForm extends Component
 
     private function handlerFor(string $type): PostTypeHandler
     {
-        $class = 'App\\PostTypes\\'.ucfirst($type).'\\Handler';
-
-        return class_exists($class) ? new $class : new DefaultHandler($type);
+        return PostTypeRegistry::handler($type);
     }
 
     #[Computed]
     public function availableTypes(): array
     {
-        return collect(File::directories(resource_path('views/components/posts')))
-            ->map(fn ($dir) => basename($dir))
-            ->sort()
-            ->values()
-            ->all();
+        return PostTypeRegistry::all();
     }
 
     #[Computed]
@@ -204,7 +198,7 @@ class PostForm extends Component
             ->all();
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.admin.post-form', [
             'handler' => $this->resolveHandler(),

@@ -30,11 +30,7 @@
                             <td class="py-3">
                                 <span class="badge rounded-0 bg-light text-dark border border-secondary text-uppercase"
                                     style="font-size: 0.7rem;">
-                                    @php
-                                        $handlerClass = 'App\\PostTypes\\' . ucfirst($post->type) . '\\Handler';
-                                        $typeHandler = class_exists($handlerClass) ? new $handlerClass : new \App\PostTypes\DefaultHandler($post->type);
-                                    @endphp
-                                    {{ $typeHandler->label() }}
+                                    {{ \App\PostTypes\PostTypeRegistry::handler($post->type)->label() }}
                                 </span>
                             </td>
                             <td class="py-3">

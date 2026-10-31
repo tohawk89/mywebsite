@@ -18,6 +18,7 @@
         "laravel-best-practices",
         "testing-best-practices",
         "fluxui-development",
-        "livewire-development"
+        "livewire-development",
+        "post-type-development"
     ]
 }
