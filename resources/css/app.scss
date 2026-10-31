@@ -106,3 +106,19 @@ $font-family-sans-serif: 'Instrument Sans', sans-serif;
         animation: none;
     }
 }
+
+// Image post: photo count badge on the feed card
+.image-post-count {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+}

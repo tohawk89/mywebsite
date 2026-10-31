@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Enums\SnsType;
 use App\Models\Post;
 use App\Models\Tag;
+use App\PostTypes\HandlesMedia;
 use App\PostTypes\PostTypeHandler;
 use App\PostTypes\PostTypeRegistry;
 use App\PostTypes\ProvidesDefaultTitle;
@@ -165,6 +166,10 @@ class PostForm extends Component
                     ->usingFileName($this->$property->getClientOriginalName())
                     ->toMediaCollection($collection);
             }
+        }
+
+        if ($handler instanceof HandlesMedia) {
+            $handler->saveMedia($this->post, $this->typeData);
         }
 
         $statusMessage = $isDraft ? 'Post saved as draft.' : 'Post published successfully.';
