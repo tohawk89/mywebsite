@@ -12,10 +12,10 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 ### Medium
 
-- [ ] **The font setting has no effect.** Admin can choose 6 fonts, but `layouts/app.blade.php` only loads Instrument Sans from Bunny Fonts, so every other choice falls back to the browser's sans-serif. Load the chosen font.
-- [ ] **N+1 queries on the feed.** The feed query doesn't eager-load `tags` or `media`, so each card runs its own queries. Add `->with(['tags', 'media'])`.
-- [ ] **Infinite scroll ignores the posts-per-page setting.** `loadMore()` always adds 10 instead of `config('site.posts_per_page')`.
-- [ ] **Spotify links with a locale prefix probably break.** `open.spotify.com/intl-id/track/...` becomes `embed/intl-id/track/...`. Strip the `intl-xx/` segment (and query string) when building the embed URL, and validate the host properly instead of `regex:/spotify\.com/`.
+- [x] **The font setting has no effect.** Only Instrument Sans was loaded. Fixed: the public layout loads the selected font from Bunny Fonts.
+- [x] **N+1 queries on the feed.** Fixed: the feed eager-loads `tags` and `media`; a test checks the query count stays flat as posts grow.
+- [x] **Infinite scroll ignores the posts-per-page setting.** Fixed: `loadMore()` adds `config('site.posts_per_page')`.
+- [x] **Spotify links with a locale prefix break.** Fixed: `Spotify\Handler::embedUrl()` parses share, `/intl-xx/` and embed links, drops query strings, and validation requires an `open.spotify.com` track, album, playlist, artist, episode or show link.
 
 ### Low / local
 

@@ -18,7 +18,7 @@ new #[Layout('layouts::app')] class extends Component {
 
     public function loadMore(): void
     {
-        $this->perPage += 10;
+        $this->perPage += config('site.posts_per_page', 10);
     }
 
     #[Computed]
@@ -26,6 +26,7 @@ new #[Layout('layouts::app')] class extends Component {
     {
         return Post::where('type', '!=', 'page')
             ->published()
+            ->with(['tags', 'media'])
             ->pinnedFirst()
             ->paginate($this->perPage);
     }
