@@ -28,8 +28,9 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 ### Admin
 
 - [x] Phase 1: sidebar layout with mobile menu, toasts, account pages in the admin, posts list with search, filters, bulk actions and quick pin/publish, post type picker with icons.
-- [ ] Phase 2: dashboard (stat tiles, continue editing, coming up, posts per month, content mix, quick create, site health).
-- [ ] Phase 3: settings split into pages (general, appearance incl. working accent color, logo and favicon, feed, SEO and sharing, integrations, maintenance).
+- [x] Phase 2: dashboard (stat tiles, continue editing, coming up, posts per month, content mix, quick create, site health).
+- [ ] Phase 3: settings split into pages (general, appearance incl. working accent color, logo (site icon is done), feed, SEO and sharing, integrations, maintenance).
+  - Integrations > Analytics: provider choice (none, Google Analytics 4 via public Measurement ID `G-…`, Plausible), script on public pages only, "don't count my own visits" switch. Later and optional: cookie consent banner; visit stats in the dashboard via the GA Data API (needs an encrypted service-account key).
 - [ ] Remove the now-unused `livewire/flux` dependency (no views use it anymore).
 
 ### Post types
@@ -52,6 +53,7 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 ## Done recently
 
+- Admin phase 2: dashboard; site icon (favicon) upload in site settings.
 - Website link post type: reads the shared page's title, description, image and icon (blocks private network addresses).
 - Image posts: multiple photos per post, fullscreen viewer with slider (GLightbox); optional `HandlesMedia` hook for post types that manage their own uploads.
 - Configurable home page background (color, gradient, image, pattern, animated effects) with live preview in site settings.

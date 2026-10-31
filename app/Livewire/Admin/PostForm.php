@@ -59,6 +59,12 @@ class PostForm extends Component
             $this->typeData = $this->resolveHandler()->mountData($post);
         } else {
             $this->posted_at = now()->format('Y-m-d\TH:i');
+
+            // Quick create links (e.g. from the dashboard) preselect a type with ?type=...
+            $requested = (string) request()->query('type', '');
+            if (in_array($requested, $this->availableTypes(), true)) {
+                $this->type = $requested;
+            }
         }
     }
 

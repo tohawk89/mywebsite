@@ -16,8 +16,26 @@
                 <x-form.input name="site_title" label="Site title" />
                 <x-form.input name="site_description" label="Site description" optional
                     hint="Used as the meta description for search engines." />
-                <x-form.input name="footer_text" label="Footer text" optional wrapper="mb-0"
+                <x-form.input name="footer_text" label="Footer text" optional
                     placeholder="© 2026 My Website. All rights reserved." />
+
+                <x-form.field name="site_icon_upload" for="site-icon" label="Site icon" optional wrapper="mb-0"
+                    hint="Shown in browser tabs and bookmarks. Square PNG, JPG, WebP or ICO up to 1 MB; 512×512 works best.">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="admin-thumb flex-shrink-0">
+                            @if($this->siteIconPreview)
+                                <img src="{{ $this->siteIconPreview }}" alt="Current site icon" class="w-100 h-100 object-fit-contain p-1">
+                            @else
+                                <i class="bi bi-globe2"></i>
+                            @endif
+                        </span>
+                        <input type="file" id="site-icon" wire:model="site_icon_upload" accept=".png,.jpg,.jpeg,.webp,.ico"
+                            class="form-control">
+                        @if($site_icon_upload || $site_icon)
+                            <button type="button" class="btn btn-light flex-shrink-0" wire:click="removeSiteIcon">Use default</button>
+                        @endif
+                    </div>
+                </x-form.field>
             </div>
         </div>
 

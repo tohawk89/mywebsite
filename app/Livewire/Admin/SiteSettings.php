@@ -26,6 +26,12 @@ class SiteSettings extends Component
 
     public string $footer_text = '';
 
+    /** Stored path of the uploaded site icon (favicon); empty for the default icon. */
+    public string $site_icon = '';
+
+    /** @var TemporaryUploadedFile|null */
+    public $site_icon_upload;
+
     // Appearance
     public string $background_color = '#fdfbf7';
 
@@ -57,6 +63,7 @@ class SiteSettings extends Component
         $this->site_title = Setting::get('site_title', 'My Website');
         $this->site_description = Setting::get('site_description', '');
         $this->footer_text = Setting::get('footer_text', '');
+        $this->site_icon = (string) Setting::get('site_icon', '');
         $this->background_color = Setting::get('background_color', '#fdfbf7');
         $this->accent_color = Setting::get('accent_color', '#2c3e50');
         $this->font = Setting::get('font', 'Instrument Sans');
@@ -75,8 +82,31 @@ class SiteSettings extends Component
             'font' => ['required', 'string', 'in:'.implode(',', $this->availableFonts)],
             'posts_per_page' => ['required', 'integer', 'min:1', 'max:100'],
             'background_image' => ['nullable', 'image', 'max:5120'],
+            // No SVG: an uploaded SVG can carry scripts.
+            'site_icon_upload' => ['nullable', 'file', 'mimes:png,jpg,jpeg,webp,ico', 'max:1024'],
             ...SiteBackground::rules('background'),
         ];
+    }
+
+    public function updatedSiteIconUpload(): void
+    {
+        $this->validateOnly('site_icon_upload');
+    }
+
+    public function removeSiteIcon(): void
+    {
+        $this->site_icon_upload = null;
+        $this->site_icon = '';
+    }
+
+    #[Computed]
+    public function siteIconPreview(): ?string
+    {
+        if ($this->site_icon_upload && ! $this->getErrorBag()->has('site_icon_upload') && $this->site_icon_upload->isPreviewable()) {
+            return $this->site_icon_upload->temporaryUrl();
+        }
+
+        return $this->site_icon ? Storage::disk(SiteBackground::disk())->url($this->site_icon) : null;
     }
 
     public function updatedBackgroundImage(): void
@@ -132,6 +162,8 @@ class SiteSettings extends Component
         Setting::set('font', $this->font);
         Setting::set('posts_per_page', (string) $this->posts_per_page);
 
+        $this->saveSiteIcon();
+
         $savedImage = SiteBackground::load()['image_path'];
 
         if ($this->background_image) {
@@ -147,6 +179,23 @@ class SiteSettings extends Component
         SiteBackground::save($this->background);
 
         $this->dispatch('notify', message: 'Settings saved.');
+    }
+
+    private function saveSiteIcon(): void
+    {
+        $savedIcon = (string) Setting::get('site_icon', '');
+
+        if ($this->site_icon_upload) {
+            $this->site_icon = $this->site_icon_upload->store('site', SiteBackground::disk());
+            $this->site_icon_upload = null;
+        }
+
+        // Delete the old file when the icon was replaced or removed.
+        if ($savedIcon && $savedIcon !== $this->site_icon) {
+            Storage::disk(SiteBackground::disk())->delete($savedIcon);
+        }
+
+        Setting::set('site_icon', $this->site_icon);
     }
 
     public function render(): View

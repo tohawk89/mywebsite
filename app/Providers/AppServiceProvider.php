@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Setting;
 use App\Support\SiteBackground;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
                 'site.font' => Setting::get('font', 'Instrument Sans'),
                 'site.posts_per_page' => (int) Setting::get('posts_per_page', 10),
                 'site.background' => SiteBackground::load(),
+                'site.icon_url' => ($icon = Setting::get('site_icon')) ? Storage::disk(SiteBackground::disk())->url($icon) : null,
             ]);
         } catch (\Exception) {
             // Table not yet migrated — use defaults

@@ -90,7 +90,8 @@ Current types: blog, image, instagram, link (website preview), page, profile, pr
 
 - Draft/publish workflow, pinned posts with drag-to-reorder, tags
 - Images via Spatie Media Library (local or S3); image posts hold several photos and open fullscreen as a swipeable slider (GLightbox, loaded from jsDelivr on first click)
-- Site settings: title, description, footer, colours, font, posts per page
+- Admin dashboard: post stats, drafts to continue, scheduled posts, posts per month, content mix, quick create and site health checks
+- Site settings: title, description, footer, site icon (favicon), colours, font, posts per page
 - Configurable home page background: color, gradient, image, CSS pattern, or animated effect (matrix rain, particles, starfield, waves) with a live preview. Effects live in `resources/js/backgrounds/effects/`, load on demand, pause in hidden tabs and respect reduced motion
 - Social profile links for 12 platforms
 - Fortify authentication with two-factor (TOTP and recovery codes)
