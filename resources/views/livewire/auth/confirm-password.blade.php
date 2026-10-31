@@ -1,28 +1,13 @@
-<x-layouts.auth>
-    <div class="flex flex-col gap-6">
-        <x-auth.header
-            :title="__('Confirm password')"
-            :description="__('This is a secure area of the application. Please confirm your password before continuing.')"
-        />
+<x-layouts.auth title="Confirm password">
+    <x-auth.header title="Confirm password" description="This is a secure area. Confirm your password to continue." />
+    <x-auth.session-status class="text-center" :status="session('status')" />
 
-        <x-auth.session-status class="text-center" :status="session('status')" />
+    <form method="POST" action="{{ route('password.confirm.store') }}">
+        @csrf
+        <x-auth.input name="password" type="password" label="Password" required autofocus autocomplete="current-password" />
 
-        <form method="POST" action="{{ route('password.confirm.store') }}" class="flex flex-col gap-6">
-            @csrf
-
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="current-password"
-                :placeholder="__('Password')"
-                viewable
-            />
-
-            <flux:button variant="primary" type="submit" class="w-full" data-test="confirm-password-button">
-                {{ __('Confirm') }}
-            </flux:button>
-        </form>
-    </div>
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-dark py-2 fw-bold" data-test="confirm-password-button">Confirm</button>
+        </div>
+    </form>
 </x-layouts.auth>

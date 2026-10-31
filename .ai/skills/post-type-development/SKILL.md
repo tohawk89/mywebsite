@@ -31,7 +31,7 @@ php artisan make:post-type {name} --label="Human Label" --media=cover
 ## Key pieces
 
 - `App\PostTypes\PostTypeRegistry`: `all()`, `exists()`, `handler($type)`, `handlerClass($type)`, `path($type)`. Use it instead of building class names by hand.
-- `App\PostTypes\PostTypeHandler`: `label()`, `rules()`, `buildMetaData(array $typeData)`, `mountData(Post $post)`, `mediaCollections()`.
+- `App\PostTypes\PostTypeHandler`: `label()`, `icon()` (Bootstrap Icons class such as `bi-youtube`, shown in the admin type picker and posts list), `rules()`, `buildMetaData(array $typeData)`, `mountData(Post $post)`, `mediaCollections()`.
 - `App\PostTypes\ProvidesDefaultTitle`: optional; implement `defaultTitle($metaData, $typeData)` to fill an empty title on save (see the `repository` type).
 - `App\Livewire\Admin\PostForm`: owns shared fields `title`, `content`, `tags`, `is_pinned`, `posted_at`, draft/publish, `cover_image`, `avatar_image`. Type-specific inputs bind to `typeData.*`.
 

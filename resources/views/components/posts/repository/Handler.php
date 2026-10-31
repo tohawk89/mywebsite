@@ -17,6 +17,11 @@ class Handler implements PostTypeHandler, ProvidesDefaultTitle
         return 'Git Repository';
     }
 
+    public function icon(): string
+    {
+        return 'bi-git';
+    }
+
     public function rules(): array
     {
         return [

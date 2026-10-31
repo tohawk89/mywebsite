@@ -193,7 +193,11 @@ class PostForm extends Component
     public function typesWithLabels(): array
     {
         return collect($this->availableTypes())
-            ->map(fn (string $type) => ['value' => $type, 'label' => $this->handlerFor($type)->label()])
+            ->map(fn (string $type) => [
+                'value' => $type,
+                'label' => $this->handlerFor($type)->label(),
+                'icon' => $this->handlerFor($type)->icon(),
+            ])
             ->all();
     }
 
@@ -201,6 +205,6 @@ class PostForm extends Component
     {
         return view('livewire.admin.post-form', [
             'handler' => $this->resolveHandler(),
-        ]);
+        ])->title($this->post ? 'Edit post' : 'New post');
     }
 }

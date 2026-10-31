@@ -54,7 +54,7 @@ This generates three files from the templates in `stubs/post-type/` and rebuilds
 
 | File | Purpose |
 |------|---------|
-| `Handler.php` | `App\PostTypes\{Studly}\Handler`: label, validation rules (`typeData.*`), how form data maps to the `meta_data` column, media collections |
+| `Handler.php` | `App\PostTypes\{Studly}\Handler`: label, admin icon (a Bootstrap Icons class), validation rules (`typeData.*`), how form data maps to the `meta_data` column, media collections |
 | `card.blade.php` | The feed card (Livewire single-file component), built with `<x-post-card>` |
 | `form.blade.php` | The admin form fields, built with `<x-form.*>` components |
 

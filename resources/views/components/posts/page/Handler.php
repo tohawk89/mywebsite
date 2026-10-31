@@ -12,6 +12,11 @@ class Handler implements PostTypeHandler
         return 'Page';
     }
 
+    public function icon(): string
+    {
+        return 'bi-file-earmark-text';
+    }
+
     public function rules(): array
     {
         return [

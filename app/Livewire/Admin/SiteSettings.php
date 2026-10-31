@@ -3,10 +3,13 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Setting;
+use Illuminate\View\View;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts::admin')]
+#[Title('Site settings')]
 class SiteSettings extends Component
 {
     // Identity
@@ -72,10 +75,10 @@ class SiteSettings extends Component
         Setting::set('font', $this->font);
         Setting::set('posts_per_page', (string) $this->posts_per_page);
 
-        session()->flash('status', 'Settings saved successfully.');
+        $this->dispatch('notify', message: 'Settings saved.');
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.admin.site-settings');
     }

@@ -13,6 +13,11 @@ class Handler implements PostTypeHandler
         return 'Instagram Post';
     }
 
+    public function icon(): string
+    {
+        return 'bi-instagram';
+    }
+
     public function rules(): array
     {
         return [

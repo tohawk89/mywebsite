@@ -13,6 +13,11 @@ class Handler implements PostTypeHandler
         return 'YouTube Video';
     }
 
+    public function icon(): string
+    {
+        return 'bi-youtube';
+    }
+
     public function rules(): array
     {
         return [

@@ -16,12 +16,21 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 - [x] **N+1 queries on the feed.** Fixed: the feed eager-loads `tags` and `media`; a test checks the query count stays flat as posts grow.
 - [x] **Infinite scroll ignores the posts-per-page setting.** Fixed: `loadMore()` adds `config('site.posts_per_page')`.
 - [x] **Spotify links with a locale prefix break.** Fixed: `Spotify\Handler::embedUrl()` parses share, `/intl-xx/` and embed links, drops query strings, and validation requires an `open.spotify.com` track, album, playlist, artist, episode or show link.
+- [x] **Account and password-reset pages render unstyled.** They used Flux, which needs Tailwind (not installed). Fixed: rebuilt in Bootstrap; account pages now live in the admin.
+- [ ] **The accent color setting has no effect.** It's saved, but nothing on the public site uses `--site-accent`. Planned in admin phase 3.
 
 ### Low / local
 
 - [ ] **Mixed-content warnings locally.** `.env` has `APP_URL=http://mywebsite.test` while Herd serves https, so media URLs come out as `http://`. Set `APP_URL=https://mywebsite.test` (local `.env`, not committed).
 
 ## Next improvements
+
+### Admin
+
+- [x] Phase 1: sidebar layout with mobile menu, toasts, account pages in the admin, posts list with search, filters, bulk actions and quick pin/publish, post type picker with icons.
+- [ ] Phase 2: dashboard (stat tiles, continue editing, coming up, posts per month, content mix, quick create, site health).
+- [ ] Phase 3: settings split into pages (general, appearance incl. working accent color, logo and favicon, feed, SEO and sharing, integrations, maintenance).
+- [ ] Remove the now-unused `livewire/flux` dependency (no views use it anymore).
 
 ### Post types
 
@@ -43,6 +52,7 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 ## Done recently
 
+- Admin redesign phase 1 (see Admin above).
 - Pinterest-style masonry feed; YouTube click-to-play thumbnails; Spotify player height by content type.
 - `make:post-type` command, `PostTypeRegistry`, and the `post-type-development` AI skill.
 - Upgrade to Laravel 13, Livewire 4.4 and Laravel Boost 2.

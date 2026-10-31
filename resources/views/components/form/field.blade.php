@@ -10,10 +10,10 @@
 
 <div class="{{ $wrapper }}">
     @if($label)
-        <label @if($for) for="{{ $for }}" @endif class="form-label fw-bold small text-uppercase">
+        <label @if($for) for="{{ $for }}" @endif class="form-label">
             {{ $label }}
             @if($optional)
-                <span class="fw-normal text-muted text-lowercase">(optional)</span>
+                <span class="fw-normal text-muted">(optional)</span>
             @endif
         </label>
     @endif

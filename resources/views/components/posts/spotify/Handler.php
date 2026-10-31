@@ -13,6 +13,11 @@ class Handler implements PostTypeHandler
         return 'Spotify Embed';
     }
 
+    public function icon(): string
+    {
+        return 'bi-spotify';
+    }
+
     public function rules(): array
     {
         return [

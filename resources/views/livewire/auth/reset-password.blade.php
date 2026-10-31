@@ -1,52 +1,17 @@
-<x-layouts.auth>
-    <div class="flex flex-col gap-6">
-        <x-auth.header :title="__('Reset password')" :description="__('Please enter your new password below')" />
+<x-layouts.auth title="Reset password">
+    <x-auth.header title="Reset password" description="Enter your new password below." />
+    <x-auth.session-status class="text-center" :status="session('status')" />
 
-        <!-- Session Status -->
-        <x-auth.session-status class="text-center" :status="session('status')" />
+    <form method="POST" action="{{ route('password.update') }}">
+        @csrf
+        <input type="hidden" name="token" value="{{ request()->route('token') }}">
 
-        <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-6">
-            @csrf
-            <!-- Token -->
-            <input type="hidden" name="token" value="{{ request()->route('token') }}">
+        <x-auth.input name="email" type="email" label="Email" :value="request('email')" required autocomplete="email" />
+        <x-auth.input name="password" type="password" label="Password" required autocomplete="new-password" />
+        <x-auth.input name="password_confirmation" type="password" label="Confirm password" required autocomplete="new-password" />
 
-            <!-- Email Address -->
-            <flux:input
-                name="email"
-                value="{{ request('email') }}"
-                :label="__('Email')"
-                type="email"
-                required
-                autocomplete="email"
-            />
-
-            <!-- Password -->
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Password')"
-                viewable
-            />
-
-            <!-- Confirm Password -->
-            <flux:input
-                name="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Confirm password')"
-                viewable
-            />
-
-            <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full" data-test="reset-password-button">
-                    {{ __('Reset password') }}
-                </flux:button>
-            </div>
-        </form>
-    </div>
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-dark py-2 fw-bold" data-test="reset-password-button">Reset password</button>
+        </div>
+    </form>
 </x-layouts.auth>

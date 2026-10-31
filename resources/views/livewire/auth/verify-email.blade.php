@@ -1,29 +1,19 @@
-<x-layouts.auth>
-    <div class="mt-4 flex flex-col gap-6">
-        <flux:text class="text-center">
-            {{ __('Please verify your email address by clicking on the link we just emailed to you.') }}
-        </flux:text>
+<x-layouts.auth title="Verify email">
+    <x-auth.header title="Verify your email" description="Click the link we just emailed you to verify your address." />
 
-        @if (session('status') == 'verification-link-sent')
-            <flux:text class="text-center font-medium !dark:text-green-400 !text-green-600">
-                {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-            </flux:text>
-        @endif
-
-        <div class="flex flex-col items-center justify-between space-y-3">
-            <form method="POST" action="{{ route('verification.send') }}">
-                @csrf
-                <flux:button type="submit" variant="primary" class="w-full">
-                    {{ __('Resend verification email') }}
-                </flux:button>
-            </form>
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-               <flux:button variant="ghost" type="submit" class="text-sm cursor-pointer" data-test="logout-button">
-                    {{ __('Log out') }}
-                </flux:button>
-            </form>
+    @if (session('status') == 'verification-link-sent')
+        <div class="alert alert-success small rounded-0 border-0" role="status">
+            A new verification link has been sent to your email address.
         </div>
-    </div>
+    @endif
+
+    <form method="POST" action="{{ route('verification.send') }}" class="d-grid">
+        @csrf
+        <button type="submit" class="btn btn-dark py-2 fw-bold">Resend verification email</button>
+    </form>
+
+    <form method="POST" action="{{ route('logout') }}" class="text-center mt-3">
+        @csrf
+        <button type="submit" class="btn btn-link btn-sm text-muted" data-test="logout-button">Log out</button>
+    </form>
 </x-layouts.auth>

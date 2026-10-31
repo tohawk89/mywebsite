@@ -14,6 +14,11 @@ class Handler implements PostTypeHandler
         return 'Profile';
     }
 
+    public function icon(): string
+    {
+        return 'bi-person-badge';
+    }
+
     public function rules(): array
     {
         return [

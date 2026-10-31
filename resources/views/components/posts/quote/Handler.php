@@ -12,6 +12,11 @@ class Handler implements PostTypeHandler
         return 'Quote';
     }
 
+    public function icon(): string
+    {
+        return 'bi-quote';
+    }
+
     public function rules(): array
     {
         return [

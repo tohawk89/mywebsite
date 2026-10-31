@@ -13,6 +13,11 @@ class DefaultHandler implements PostTypeHandler
         return ucfirst($this->type);
     }
 
+    public function icon(): string
+    {
+        return 'bi-file-earmark';
+    }
+
     public function rules(): array
     {
         return [];

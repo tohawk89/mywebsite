@@ -12,6 +12,11 @@ class Handler implements PostTypeHandler
         return 'Blog Post';
     }
 
+    public function icon(): string
+    {
+        return 'bi-journal-text';
+    }
+
     public function rules(): array
     {
         return [

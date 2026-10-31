@@ -16,5 +16,5 @@
 
 <x-form.field :$name :for="$id" :$label :$optional :$hint :$wrapper>
     <textarea id="{{ $id }}" rows="{{ $rows }}" {{ $live ? 'wire:model.live' : 'wire:model' }}="{{ $name }}"
-        {{ $attributes->except('id')->class(['form-control rounded-0 bg-light border-0']) }}></textarea>
+        {{ $attributes->except('id')->class(['form-control']) }}></textarea>
 </x-form.field>

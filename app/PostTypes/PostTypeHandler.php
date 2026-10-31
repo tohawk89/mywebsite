@@ -9,6 +9,9 @@ interface PostTypeHandler
     /** Human-readable label shown in the type selector. */
     public function label(): string;
 
+    /** Bootstrap Icons class shown in the admin (e.g. "bi-youtube"). */
+    public function icon(): string;
+
     /**
      * Extra validation rules merged with PostForm's base rules.
      * Keys for type-specific fields must be prefixed with 'typeData.'.

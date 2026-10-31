@@ -12,6 +12,11 @@ class Handler implements PostTypeHandler
         return 'Project';
     }
 
+    public function icon(): string
+    {
+        return 'bi-kanban';
+    }
+
     public function rules(): array
     {
         return [];

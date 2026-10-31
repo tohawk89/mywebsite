@@ -18,5 +18,5 @@
 
 <x-form.field :$name :for="$id" :$label :$optional :$hint :$wrapper>
     <input type="{{ $type }}" id="{{ $id }}" {{ $live ? 'wire:model.live' : 'wire:model' }}="{{ $name }}"
-        {{ $attributes->except('id')->class(['form-control rounded-0 bg-light border-0', 'form-control-lg' => $size === 'lg']) }}>
+        {{ $attributes->except('id')->class(['form-control', 'form-control-lg' => $size === 'lg']) }}>
 </x-form.field>

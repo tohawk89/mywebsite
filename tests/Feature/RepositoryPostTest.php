@@ -46,7 +46,7 @@ class RepositoryPostTest extends TestCase
             ->instance()
             ->typesWithLabels();
 
-        $this->assertContains(['value' => 'repository', 'label' => 'Git Repository'], $typesWithLabels);
+        $this->assertContains(['value' => 'repository', 'label' => 'Git Repository', 'icon' => 'bi-git'], $typesWithLabels);
     }
 
     public function test_admin_can_create_repository_post_with_github_api_fetch(): void

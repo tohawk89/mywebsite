@@ -17,7 +17,7 @@
 
 <x-form.field :$name :for="$id" :$label :$optional :$hint :$wrapper>
     <select id="{{ $id }}" {{ $live ? 'wire:model.live' : 'wire:model' }}="{{ $name }}"
-        {{ $attributes->except('id')->class(['form-select rounded-0 bg-light border-0']) }}>
+        {{ $attributes->except('id')->class(['form-select']) }}>
         @if($placeholder)
             <option value="">{{ $placeholder }}</option>
         @endif

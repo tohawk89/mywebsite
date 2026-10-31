@@ -12,6 +12,11 @@ class Handler implements PostTypeHandler
         return 'Image';
     }
 
+    public function icon(): string
+    {
+        return 'bi-image';
+    }
+
     public function rules(): array
     {
         return [];
