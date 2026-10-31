@@ -36,5 +36,9 @@
         @else
             <x-post-card-body :$post :$title :$excerpt :$expandable :spacer="$insetMedia">{{ $slot }}</x-post-card-body>
         @endisset
+
+        @if(config('site.show_dates') && $post->posted_at)
+            <time class="card-date d-block" datetime="{{ $post->posted_at->toDateString() }}">{{ $post->posted_at->format('M j, Y') }}</time>
+        @endif
     </div>
 </div>

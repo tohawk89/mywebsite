@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ShowComingSoon;
 use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\PostForm;
 use App\Livewire\Admin\PostIndex;
@@ -10,7 +11,7 @@ use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::livewire('/', 'pages::post-feed')->name('home');
+Route::livewire('/', 'pages::post-feed')->middleware(ShowComingSoon::class)->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -35,6 +36,8 @@ Route::middleware(['auth'])->group(function () {
         Route::livewire('posts', PostIndex::class)->name('posts.index');
         Route::livewire('posts/create', PostForm::class)->name('posts.create');
         Route::livewire('posts/{post}/edit', PostForm::class)->name('posts.edit');
-        Route::livewire('settings', SiteSettings::class)->name('settings');
+        Route::livewire('settings/{section?}', SiteSettings::class)
+            ->whereIn('section', array_keys(SiteSettings::SECTIONS))
+            ->name('settings');
     });
 });

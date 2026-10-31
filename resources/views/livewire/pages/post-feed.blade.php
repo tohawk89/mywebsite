@@ -26,6 +26,7 @@ new #[Layout('layouts::app')] class extends Component {
     {
         return Post::where('type', '!=', 'page')
             ->published()
+            ->whereNotIn('type', config('site.hidden_types', []))
             ->with(['tags', 'media'])
             ->pinnedFirst()
             ->paginate($this->perPage);
@@ -34,7 +35,7 @@ new #[Layout('layouts::app')] class extends Component {
 ?>
 
 <div class="container text-center py-4">
-    <div class="feed-grid" id="feed-grid" wire:ignore.self>
+    <div @class(['feed-grid', 'is-max-3' => config('site.max_columns') === 3]) id="feed-grid" wire:ignore.self>
         @foreach($this->posts as $post)
             <livewire:dynamic-component
                 :is="'posts.' . $post->type . '.card'"
@@ -44,14 +45,24 @@ new #[Layout('layouts::app')] class extends Component {
         @endforeach
     </div>
 
-    <div class="text-center my-5" x-data="{ intersect: false }" x-intersect="$wire.loadMore()">
+    {{-- Loads more automatically on scroll, or with a button (Site settings > Feed). --}}
+    @php($loadWithButton = config('site.feed_loading') === 'button')
+    <div class="text-center my-5" @unless($loadWithButton) x-data x-intersect="$wire.loadMore()" @endunless>
 
         @if($this->posts->hasMorePages())
-            <div wire:loading>
-                <div class="spinner-border text-secondary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+            @if($loadWithButton)
+                <button type="button" class="btn btn-outline-dark rounded-0 px-4 feed-load-more" wire:click="loadMore"
+                    wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="loadMore">Load more</span>
+                    <span wire:loading wire:target="loadMore">Loading…</span>
+                </button>
+            @else
+                <div wire:loading>
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
-            </div>
+            @endif
         @else
             <div class="alert alert-light border-0 shadow-sm rounded-pill d-inline-block px-4 py-2 text-muted fw-medium">
                 You've reached the end of the line! 🎉

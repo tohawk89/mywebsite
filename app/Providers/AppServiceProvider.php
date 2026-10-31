@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Setting;
-use App\Support\SiteBackground;
+use App\Support\SiteOptions;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,17 +19,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Load settings from DB into app config (gracefully skip if table doesn't exist yet)
         try {
-            config([
-                'app.name' => Setting::get('site_title', config('app.name')),
-                'site.description' => Setting::get('site_description', ''),
-                'site.footer_text' => Setting::get('footer_text', ''),
-                'site.background_color' => Setting::get('background_color', '#fdfbf7'),
-                'site.accent_color' => Setting::get('accent_color', '#2c3e50'),
-                'site.font' => Setting::get('font', 'Instrument Sans'),
-                'site.posts_per_page' => (int) Setting::get('posts_per_page', 10),
-                'site.background' => SiteBackground::load(),
-                'site.icon_url' => ($icon = Setting::get('site_icon')) ? Storage::disk(SiteBackground::disk())->url($icon) : null,
-            ]);
+            config(SiteOptions::toConfig());
         } catch (\Exception) {
             // Table not yet migrated — use defaults
         }

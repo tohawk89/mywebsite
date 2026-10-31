@@ -5,6 +5,7 @@ namespace App\PostTypes\Repository;
 use App\Models\Post;
 use App\PostTypes\PostTypeHandler;
 use App\PostTypes\ProvidesDefaultTitle;
+use App\Support\SiteOptions;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
@@ -109,9 +110,14 @@ class Handler implements PostTypeHandler, ProvidesDefaultTitle
 
     private function fetchGithub(string $path): ?array
     {
-        $response = $this->client()
-            ->withHeaders(['Accept' => 'application/vnd.github.v3+json'])
-            ->get("https://api.github.com/repos/{$path}");
+        $client = $this->client()->withHeaders(['Accept' => 'application/vnd.github.v3+json']);
+
+        // A token from Site settings > Integrations raises GitHub's limit from about 60 to 5,000 lookups an hour.
+        if ($token = SiteOptions::githubToken()) {
+            $client = $client->withToken($token);
+        }
+
+        $response = $client->get("https://api.github.com/repos/{$path}");
 
         if (! $response->successful()) {
             return null;

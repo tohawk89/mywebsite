@@ -66,11 +66,14 @@
                             Scheduled <span class="admin-nav-count">{{ $postCounts['scheduled'] }}</span>
                         </a>
 
-                        <div class="admin-nav-heading">Site</div>
-                        <a href="{{ route('settings') }}" wire:navigate
-                            @class(['nav-link', 'active' => request()->routeIs('settings')])>
-                            <i class="bi bi-sliders"></i> Site settings
-                        </a>
+                        <div class="admin-nav-heading">Site settings</div>
+                        @php($settingsSection = request()->routeIs('settings') ? (request()->route('section') ?? 'general') : null)
+                        @foreach(\App\Livewire\Admin\SiteSettings::SECTIONS as $key => [$label, $description, $icon])
+                            <a href="{{ route('settings', $key) }}" wire:navigate
+                                @class(['nav-link', 'active' => $settingsSection === $key])>
+                                <i class="bi {{ $icon }}"></i> {{ $label }}
+                            </a>
+                        @endforeach
                         <a href="{{ route('home') }}" target="_blank" class="nav-link">
                             <i class="bi bi-box-arrow-up-right"></i> View site
                         </a>

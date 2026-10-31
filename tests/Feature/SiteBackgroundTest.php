@@ -161,7 +161,8 @@ class SiteBackgroundTest extends TestCase
 
     public function test_settings_page_shows_a_live_preview(): void
     {
-        $this->settings()
+        Livewire::actingAs(User::factory()->create(['is_admin' => true]))
+            ->test(SiteSettings::class, ['section' => 'appearance'])
             ->set('background.type', 'animated')
             ->assertSee('site-bg is-preview', false)
             ->assertSee('data-site-background', false)

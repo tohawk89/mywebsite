@@ -17,7 +17,7 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 - [x] **Infinite scroll ignores the posts-per-page setting.** Fixed: `loadMore()` adds `config('site.posts_per_page')`.
 - [x] **Spotify links with a locale prefix break.** Fixed: `Spotify\Handler::embedUrl()` parses share, `/intl-xx/` and embed links, drops query strings, and validation requires an `open.spotify.com` track, album, playlist, artist, episode or show link.
 - [x] **Account and password-reset pages render unstyled.** They used Flux, which needs Tailwind (not installed). Fixed: rebuilt in Bootstrap; account pages now live in the admin.
-- [ ] **The accent color setting has no effect.** It's saved, but nothing on the public site uses `--site-accent`. Planned in admin phase 3.
+- [x] **The accent color setting has no effect.** Fixed in admin phase 3: it now colors buttons, Read more links, link previews and footer links.
 
 ### Low / local
 
@@ -29,8 +29,8 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 - [x] Phase 1: sidebar layout with mobile menu, toasts, account pages in the admin, posts list with search, filters, bulk actions and quick pin/publish, post type picker with icons.
 - [x] Phase 2: dashboard (stat tiles, continue editing, coming up, posts per month, content mix, quick create, site health).
-- [ ] Phase 3: settings split into pages (general, appearance incl. working accent color, logo (site icon is done), feed, SEO and sharing, integrations, maintenance).
-  - Integrations > Analytics: provider choice (none, Google Analytics 4 via public Measurement ID `G-…`, Plausible), script on public pages only, "don't count my own visits" switch. Later and optional: cookie consent banner; visit stats in the dashboard via the GA Data API (needs an encrypted service-account key).
+- [x] Phase 3: settings split into pages (General, Appearance, Feed, SEO and sharing, Integrations, Maintenance) with a working accent color, heading font, card style, columns, feed loading/dates/hidden types, Open Graph and search tags, analytics (GA4 or Plausible), an encrypted GitHub token, and coming soon mode.
+- [ ] Later and optional: cookie consent banner for Google Analytics; visit stats in the dashboard via the GA Data API (needs an encrypted service-account key); a logo once the public site has a header.
 - [ ] Remove the now-unused `livewire/flux` dependency (no views use it anymore).
 
 ### Post types
@@ -53,6 +53,7 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 ## Done recently
 
+- Admin phase 3: settings pages, SEO and sharing tags, analytics, GitHub token, coming soon mode; settings now load with one query per request.
 - Admin phase 2: dashboard; site icon (favicon) upload in site settings.
 - Website link post type: reads the shared page's title, description, image and icon (blocks private network addresses).
 - Image posts: multiple photos per post, fullscreen viewer with slider (GLightbox); optional `HandlesMedia` hook for post types that manage their own uploads.

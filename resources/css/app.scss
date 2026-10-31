@@ -164,3 +164,62 @@ $font-family-sans-serif: 'Instrument Sans', sans-serif;
     color: inherit;
     font-weight: 600;
 }
+
+// Site settings > Appearance: accent color, heading font and card style
+h1, h2, h3, h4, h5, h6, .card-title {
+    font-family: var(--site-heading-font, inherit);
+}
+
+.feed-item .btn-outline-dark,
+.feed-load-more {
+    --bs-btn-color: var(--site-accent);
+    --bs-btn-border-color: var(--site-accent);
+    --bs-btn-hover-bg: var(--site-accent);
+    --bs-btn-hover-border-color: var(--site-accent);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-bg: var(--site-accent);
+    --bs-btn-active-border-color: var(--site-accent);
+}
+
+.card-read-more,
+footer a {
+    color: var(--site-accent);
+}
+
+.link-preview:hover {
+    border-color: var(--site-accent);
+}
+
+.cards-rounded .feed-item .card {
+    border-radius: 0.75rem !important;
+}
+
+.cards-flat .feed-item .card {
+    box-shadow: none !important;
+}
+
+.feed-grid.is-max-3 {
+    @include media-breakpoint-up(xxl) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.card-date {
+    padding: 0 1rem 0.75rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+// Shown to admins on the public site while coming soon mode is on
+.site-admin-notice {
+    padding: 0.5rem 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    background: #fff4ce;
+    color: #6b4e00;
+
+    a {
+        color: inherit;
+        font-weight: 600;
+    }
+}
