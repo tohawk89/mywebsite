@@ -17,13 +17,15 @@ new class extends Component {
             </div>
         @endif
 
-        <div class="card-body d-flex flex-column justify-content-center align-items-center p-4">
-            <blockquote class="blockquote mb-0 text-center">
-                <p class="fs-4 fst-italic fw-serif">"{{ $post->content }}"</p>
-                @if(isset($post->meta_data['author']))
-                    <footer class="blockquote-footer mt-3 text-dark opacity-75">{{ $post->meta_data['author'] }}</footer>
-                @endif
+        {{-- The form saves "Author / Source" as the post title. --}}
+        @php($author = $post->title ?: ($post->meta_data['author'] ?? null))
+        <figure class="card-body text-center p-4 mb-0">
+            <blockquote class="mb-0">
+                <p class="fst-italic mb-0 quote-text">&ldquo;{{ $post->content }}&rdquo;</p>
             </blockquote>
-        </div>
+            @if($author)
+                <figcaption class="small fw-semibold mt-3">&mdash; {{ $author }}</figcaption>
+            @endif
+        </figure>
     </x-slot:body>
 </x-post-card>
