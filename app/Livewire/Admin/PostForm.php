@@ -40,6 +40,8 @@ class PostForm extends Component
     /** Hide the title on the public site (it still shows in the admin). */
     public bool $hide_title = false;
 
+    public bool $hide_date = false;
+
     public ?string $posted_at = null;
 
     public string $tags = '';
@@ -79,6 +81,7 @@ class PostForm extends Component
             $this->is_pinned = (bool) $post->is_pinned;
             $this->is_draft = (bool) $post->is_draft;
             $this->hide_title = (bool) $post->hide_title;
+            $this->hide_date = (bool) $post->hide_date;
             $this->posted_at = $post->posted_at?->format('Y-m-d\TH:i');
             $this->tags = $post->tags->pluck('name')->implode(', ');
             $this->typeData = $this->resolveHandler()->mountData($post);
@@ -101,6 +104,7 @@ class PostForm extends Component
             'content' => ['nullable', 'string'],
             'is_pinned' => ['boolean'],
             'hide_title' => ['boolean'],
+            'hide_date' => ['boolean'],
             'posted_at' => ['nullable', 'date'],
             'tags' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'image', 'max:5120'],
@@ -311,6 +315,7 @@ class PostForm extends Component
             'is_pinned' => $this->is_pinned,
             'is_draft' => $isDraft,
             'hide_title' => $this->hide_title,
+            'hide_date' => $this->hide_date,
             'posted_at' => $this->posted_at,
             'meta_data' => $metaData,
         ];

@@ -77,6 +77,36 @@ class HideTitleTest extends TestCase
             ->assertDontSee('Hidden caption');
     }
 
+    public function test_date_can_be_hidden_from_the_editor(): void
+    {
+        Livewire::actingAs($this->admin())->test(PostForm::class)
+            ->set('type', 'blog')
+            ->set('title', 'Dated post')
+            ->set('content', 'Visible content')
+            ->set('hide_date', true)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $post = Post::first();
+        $this->assertTrue($post->hide_date);
+
+        Livewire::actingAs($this->admin())->test(PostForm::class, ['post' => $post])
+            ->assertSet('hide_date', true);
+    }
+
+    public function test_hidden_date_overrides_the_show_dates_setting_for_that_card(): void
+    {
+        config(['site.show_dates' => true]);
+
+        Post::factory()->create(['title' => 'Shown date', 'posted_at' => now()->setDate(2026, 3, 5)]);
+        Post::factory()->create(['title' => 'Hidden date', 'hide_date' => true, 'posted_at' => now()->setDate(2026, 4, 9)]);
+
+        $this->get('/')
+            ->assertSee('Hidden date')
+            ->assertSee('Mar 5, 2026')
+            ->assertDontSee('Apr 9, 2026');
+    }
+
     public function test_posts_list_still_shows_the_title_with_a_badge(): void
     {
         Post::factory()->create(['title' => 'Secret heading', 'hide_title' => true]);

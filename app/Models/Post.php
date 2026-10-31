@@ -25,6 +25,7 @@ class Post extends Model implements HasMedia
         'is_pinned',
         'is_draft',
         'hide_title',
+        'hide_date',
         'sort_order',
         'posted_at',
     ];
@@ -35,6 +36,7 @@ class Post extends Model implements HasMedia
         'is_pinned' => 'boolean',
         'is_draft' => 'boolean',
         'hide_title' => 'boolean',
+        'hide_date' => 'boolean',
         'posted_at' => 'datetime',
     ];
 
