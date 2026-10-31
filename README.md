@@ -80,7 +80,7 @@ Forms and cards are assembled from shared components, so changing a component re
 - **Form fields** (`resources/views/components/form/`): `name` sets the `wire:model` binding and error message. Options: `label`, `optional`, `hint`, `live`, `wrapper`, plus `type`/`size` (input) and `rows` (textarea). Other attributes go to the control. Use `<x-form.field>` to wrap custom layouts.
 - **Cards** (`post-card`, `post-card-body`): the default body shows tags, title and a three-line excerpt. Use the `media` slot above it (`inset-media` pads embeds), the default slot to append content, or the `body` slot for a fully custom layout. `:title="false"` and `:excerpt="false"` hide parts. Avoid fixed heights so the masonry grid can size the card.
 
-Current types: blog, image, instagram, page, profile, project, quote, repository, spotify, youtube.
+Current types: blog, image, instagram, link (website preview), page, profile, project, quote, repository, spotify, youtube.
 
 ### AI assistance
 

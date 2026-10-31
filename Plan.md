@@ -52,6 +52,7 @@ Known bugs and the next improvements, roughly in priority order. Check items off
 
 ## Done recently
 
+- Website link post type: reads the shared page's title, description, image and icon (blocks private network addresses).
 - Image posts: multiple photos per post, fullscreen viewer with slider (GLightbox); optional `HandlesMedia` hook for post types that manage their own uploads.
 - Configurable home page background (color, gradient, image, pattern, animated effects) with live preview in site settings.
 - Admin redesign phase 1 (see Admin above).
