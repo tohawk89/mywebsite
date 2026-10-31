@@ -44,6 +44,7 @@ new class extends Component {
 
                 return [
                     'name' => $tag->name,
+                    'slug' => $tag->slug,
                     'color' => $colors[$colorIndex],
                 ];
             })->toArray();
@@ -87,10 +88,10 @@ new class extends Component {
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
                                 @foreach($tags as $tag)
-                                    <span
+                                    <x-ui.tag-link :slug="$tag['slug']" wire:click="closeModal"
                                         class="badge bg-{{ $tag['color'] }}-subtle text-{{ $tag['color'] }} rounded-0 border border-{{ $tag['color'] }}-subtle me-1">
                                         {{ $tag['name'] }}
-                                    </span>
+                                    </x-ui.tag-link>
                                 @endforeach
                             </div>
                             @if($postedAt)

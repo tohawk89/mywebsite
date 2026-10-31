@@ -8,7 +8,7 @@
                 $colorIndex = crc32($tag->name) % count($colors);
                 $color = $colors[$colorIndex];
             @endphp
-            <span class="badge bg-{{ $color }}-subtle text-{{ $color }} rounded-0 mb-1 border border-{{ $color }}-subtle">{{ $tag->name }}</span>
+            <x-ui.tag-link :slug="$tag->slug" class="badge bg-{{ $color }}-subtle text-{{ $color }} rounded-0 mb-1 border border-{{ $color }}-subtle">{{ $tag->name }}</x-ui.tag-link>
         @endforeach
     </div>
 @endif

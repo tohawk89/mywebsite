@@ -44,5 +44,10 @@ new class extends Component {
         @if($images->count() > 1)
             <span class="image-post-count"><i class="bi bi-images"></i> {{ $images->count() }}</span>
         @endif
+        @if($post->tags->isNotEmpty())
+            <div class="card-body pb-1">
+                <x-ui.post-tags :tags="$post->tags" />
+            </div>
+        @endif
     </x-slot:body>
 </x-post-card>

@@ -88,6 +88,8 @@ class SiteSettings extends Component
 
     public bool $show_dates = false;
 
+    public bool $show_tag_bar = true;
+
     /** @var array<int, string> Post types left off the home page feed. */
     public array $hidden_types = [];
 
@@ -157,7 +159,7 @@ class SiteSettings extends Component
             $this->{$key} = SiteOptions::get($key);
         }
 
-        foreach (['card_shadow', 'show_dates', 'seo_noindex', 'analytics_exclude_admins', 'maintenance_enabled'] as $key) {
+        foreach (['card_shadow', 'show_dates', 'show_tag_bar', 'seo_noindex', 'analytics_exclude_admins', 'maintenance_enabled'] as $key) {
             $this->{$key} = SiteOptions::flag($key);
         }
 
@@ -188,6 +190,7 @@ class SiteSettings extends Component
             'posts_per_page' => ['required', 'integer', 'min:1', 'max:100'],
             'feed_loading' => ['required', Rule::in(['infinite', 'button'])],
             'show_dates' => ['boolean'],
+            'show_tag_bar' => ['boolean'],
             'hidden_types' => ['array'],
             'hidden_types.*' => [Rule::in(PostTypeRegistry::all())],
             'share_image_upload' => ['nullable', 'image', 'max:5120'],
@@ -400,7 +403,7 @@ class SiteSettings extends Component
             $this->refreshAiKeys();
         }
 
-        foreach (['card_shadow', 'show_dates', 'seo_noindex', 'analytics_exclude_admins', 'maintenance_enabled'] as $key) {
+        foreach (['card_shadow', 'show_dates', 'show_tag_bar', 'seo_noindex', 'analytics_exclude_admins', 'maintenance_enabled'] as $key) {
             Setting::set($key, $this->{$key} ? '1' : '0');
         }
 

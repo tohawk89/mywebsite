@@ -51,6 +51,7 @@ class SiteOptions
         'posts_per_page' => '10',
         'feed_loading' => 'infinite',
         'show_dates' => '0',
+        'show_tag_bar' => '1',
         'hidden_types' => '[]',
         // SEO and sharing
         'seo_share_image' => '',
@@ -140,6 +141,7 @@ class SiteOptions
             'site.posts_per_page' => (int) self::get('posts_per_page'),
             'site.feed_loading' => self::get('feed_loading'),
             'site.show_dates' => self::flag('show_dates'),
+            'site.show_tag_bar' => self::flag('show_tag_bar'),
             'site.hidden_types' => self::hiddenTypes(),
             'site.seo.share_image' => self::fileUrl('seo_share_image'),
             'site.seo.twitter_handle' => self::get('seo_twitter_handle'),

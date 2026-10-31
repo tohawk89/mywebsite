@@ -204,6 +204,83 @@ footer a {
     }
 }
 
+// One scrolling row of tag chips above the feed. Chips get their own background so they read on any site background.
+.feed-tag-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: var(--feed-gap, 1rem);
+    padding-bottom: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    @include media-breakpoint-up(md) {
+        flex-wrap: wrap;
+        justify-content: center;
+        overflow-x: visible;
+    }
+}
+
+.feed-tag {
+    flex-shrink: 0;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #fff;
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        background: var(--bs-tertiary-bg);
+    }
+
+    &.active {
+        background: var(--site-accent);
+        border-color: var(--site-accent);
+        color: #fff;
+    }
+}
+
+.cards-rounded .feed-tag {
+    border-radius: 999px;
+}
+
+.cards-flat .feed-tag {
+    box-shadow: none;
+}
+
+// Shown instead of the tag bar when it's turned off but the feed is filtered.
+.feed-filter-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: var(--feed-gap, 1rem);
+    padding: 0.35rem 0.75rem;
+    background: #fff;
+    font-size: 0.875rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+    .btn-close {
+        font-size: 0.6rem;
+    }
+}
+
+// Tags on cards filter the feed.
+.tag-link {
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        filter: brightness(0.92);
+    }
+}
+
 .card-date {
     padding: 0 1rem 0.75rem;
     font-size: 0.75rem;

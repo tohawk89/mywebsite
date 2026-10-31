@@ -10,6 +10,8 @@ new class extends Component {
 <x-post-card :post="$post" color="#E6E6FA">
     <x-slot:body>
         <div class="card-body text-center p-4">
+            <x-ui.post-tags :tags="$post->tags" />
+
             <div class="mb-3">
                 @if($post->hasMedia('avatar'))
                     <img src="{{ $post->getFirstMediaUrl('avatar') }}" alt="{{ $post->title }}"

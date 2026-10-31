@@ -10,6 +10,8 @@ new class extends Component {
 <x-post-card :post="$post" color="#E8F5E9">
     <x-slot:body>
         <div class="card-body">
+            <x-ui.post-tags :tags="$post->tags" />
+
             <div class="d-flex align-items-center gap-2 mb-2">
                 @if(!empty($post->meta_data['owner_avatar']))
                     <img src="{{ $post->meta_data['owner_avatar'] }}" alt="owner"

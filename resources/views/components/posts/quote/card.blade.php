@@ -12,7 +12,7 @@ new class extends Component {
         @if($post->tags->isNotEmpty())
             <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex flex-wrap gap-1">
                 @foreach($post->tags as $tag)
-                    <span class="badge bg-black text-warning fw-medium px-3 py-2 rounded-0">{{ $tag->name }}</span>
+                    <x-ui.tag-link :slug="$tag->slug" class="badge bg-black text-warning fw-medium px-3 py-2 rounded-0">{{ $tag->name }}</x-ui.tag-link>
                 @endforeach
             </div>
         @endif

@@ -236,9 +236,14 @@
                         style="max-width: 120px;" hint="Also how many more load each time." />
                     <x-form.select name="feed_loading" label="Loading more posts" wrapper="mb-3"
                         :options="['infinite' => 'Automatically as visitors scroll', 'button' => 'With a Load more button']" />
-                    <div class="form-check form-switch">
+                    <div class="form-check form-switch mb-2">
                         <input class="form-check-input" type="checkbox" role="switch" id="show-dates" wire:model="show_dates">
                         <label class="form-check-label" for="show-dates">Show the post date on each card</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="show-tag-bar" wire:model="show_tag_bar">
+                        <label class="form-check-label" for="show-tag-bar">Show a tag bar above the feed</label>
+                        <div class="form-text small">Tags on cards always filter the feed when clicked.</div>
                     </div>
                 </div>
             </div>
