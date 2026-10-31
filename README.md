@@ -1,10 +1,10 @@
 # My Website
 
-A personal website and CMS built with **Laravel 12**, **Livewire**, **Bootstrap 5.3**, and **Flux UI**. The feed uses a masonry card layout with infinite scroll. The core design goal is a **plugin-style post type system** — adding a new content type requires only dropping three files into one folder.
+A personal website and CMS built with **Laravel 13**, **Livewire 4**, **Bootstrap 5.3**, and **Flux UI**. The feed uses a masonry card layout with infinite scroll. The core design goal is a **plugin-style post type system** — adding a new content type requires only dropping three files into one folder.
 
 ## 📋 Requirements
 
-- **PHP**: ^8.2
+- **PHP**: ^8.3
 - **Node.js** & **NPM**: (Latest LTS recommended)
 - **Composer**
 - **Database**: MySQL (recommended) or SQLite
@@ -224,14 +224,14 @@ If no `Handler.php` exists for a type, `App\PostTypes\DefaultHandler` is used as
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Laravel 12 |
+| Framework | Laravel 13 |
 | Public Frontend | Bootstrap 5.3 (SCSS) + Bootstrap Icons + masonry-layout |
-| Admin / Settings UI | Livewire + Flux UI 2 |
+| Admin / Settings UI | Livewire 4 + Flux UI 2 |
 | Auth | Laravel Fortify (2FA) |
 | Media | Spatie MediaLibrary 11 + AWS S3 |
 | Frontend Bundler | Vite |
 | Dev Server | Laravel Herd |
-| Testing | PHPUnit 11 |
+| Testing | PHPUnit 12 |
 
 ## 🤝 Contributing
 Pull requests welcome for bug fixes, improvements, or new post types.
