@@ -14,8 +14,16 @@ new class extends Component {
 
             <div class="mb-3">
                 @if($post->hasMedia('avatar'))
-                    <img src="{{ $post->getFirstMediaUrl('avatar') }}" alt="{{ $post->title }}"
-                        class="rounded-circle shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+                    @php
+                        $avatarUrl = $post->getFirstMediaUrl('avatar');
+                        $openViewer = 'window.openLightbox('.\Illuminate\Support\Js::from([['href' => $avatarUrl, 'title' => $post->publicTitle()]])->toHtml().')';
+                    @endphp
+                    {{-- Clicking the avatar opens it fullscreen (resources/js/lightbox.js). --}}
+                    <img src="{{ $avatarUrl }}" alt="{{ $post->title }}"
+                        class="rounded-circle shadow-sm" style="width: 100px; height: 100px; object-fit: cover; cursor: zoom-in;"
+                        role="button" tabindex="0" aria-label="View profile photo fullscreen"
+                        x-on:click="{{ $openViewer }}"
+                        x-on:keydown.enter="{{ $openViewer }}">
                 @else
                     <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center shadow-sm text-white"
                         style="width: 100px; height: 100px; font-size: 2rem;">

@@ -7,6 +7,8 @@ use App\Livewire\Admin\PostForm;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -159,5 +161,25 @@ class ProfilePostTest extends TestCase
             ->assertStatus(200)
             ->assertSee('Jane Doe')
             ->assertSee('Developer');
+    }
+
+    public function test_profile_avatar_opens_fullscreen_in_feed(): void
+    {
+        Storage::fake(config('media-library.disk_name'));
+
+        $post = Post::factory()->create(['type' => 'profile', 'title' => 'Jane Doe', 'posted_at' => now()]);
+        $post->addMedia(UploadedFile::fake()->image('jane.jpg'))->toMediaCollection('avatar');
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('window.openLightbox(', false)
+            ->assertSee('jane.jpg', false);
+    }
+
+    public function test_profile_without_avatar_has_no_fullscreen_viewer(): void
+    {
+        Post::factory()->create(['type' => 'profile', 'title' => 'Jane Doe', 'posted_at' => now()]);
+
+        $this->get('/')->assertOk()->assertDontSee('window.openLightbox(', false);
     }
 }
